@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome | NexLink</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      color: white;
+    }
+    .welcome {
+      font-size: 2.8rem;
+      text-align: center;
+      animation: fadeInZoom 1.8s ease-in-out forwards;
+      opacity: 0;
+      transform: scale(0.9);
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeInZoom {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome">Welcome to NexLink<br>Loading...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
+      authDomain: "friends-zone-c2fe8.firebaseapp.com",
+      projectId: "friends-zone-c2fe8",
+      storageBucket: "friends-zone-c2fe8.firebasestorage.app",
+      messagingSenderId: "962940178101",
+      appId: "1:962940178101:web:330aa526d4e7b012dff8fc",
+      measurementId: "G-VPGKVYTKD1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Wait for animation before redirect
+    setTimeout(() => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          window.location.href = "dashboard.html";
+        } else {
+          const hasAccount = localStorage.getItem("userCreated");
+          if (hasAccount) {
+            window.location.href = "login.html";
+          } else {
+            window.location.href = "signup.html";
+          }
+        }
+      });
+    }, 2000);
+  </script>
+</body>
+</html>
