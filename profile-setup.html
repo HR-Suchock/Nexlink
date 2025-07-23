@@ -9,13 +9,12 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
       authDomain: "friends-zone-c2fe8.firebaseapp.com",
       projectId: "friends-zone-c2fe8",
-      storageBucket: "friends-zone-c2fe8.firebasestorage.app",
+      storageBucket: "friends-zone-c2fe8.appspot.com",
       messagingSenderId: "962940178101",
       appId: "1:962940178101:web:330aa526dff8fc",
       measurementId: "G-VPGKVYTKD1"
@@ -24,15 +23,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
     document.addEventListener("DOMContentLoaded", () => {
       let currentUserId = null;
-      let profilePicFile = null;
-
       const form = document.getElementById("profileForm");
-      const profilePicInput = document.getElementById("profilePic");
-      const profilePicPreview = document.getElementById("profilePicPreview");
 
       onAuthStateChanged(auth, async (user) => {
         if (!user) {
@@ -44,17 +38,6 @@
         await loadProfileData(currentUserId);
       });
 
-      profilePicInput.addEventListener("change", (e) => {
-        profilePicFile = e.target.files[0];
-        if (profilePicFile) {
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            profilePicPreview.src = ev.target.result;
-          };
-          reader.readAsDataURL(profilePicFile);
-        }
-      });
-
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (!currentUserId) {
@@ -63,19 +46,6 @@
         }
 
         try {
-          let photoURL = "";
-
-          if (profilePicFile) {
-            const storageRef = ref(storage, `profilePics/${currentUserId}`);
-            await uploadBytes(storageRef, profilePicFile);
-            photoURL = await getDownloadURL(storageRef);
-          } else {
-            const docSnap = await getDoc(doc(db, "users", currentUserId));
-            if (docSnap.exists()) {
-              photoURL = docSnap.data().photoURL || "";
-            }
-          }
-
           const data = {
             name: form.name.value.trim(),
             nickname: form.nickname.value.trim(),
@@ -91,7 +61,7 @@
               instagram: form.instagram.value.trim(),
               linkedin: form.linkedin.value.trim(),
             },
-            photoURL,
+            photoURL: "", // No profile image
             updatedAt: new Date(),
           };
 
@@ -127,9 +97,6 @@
             form.twitter.value = d.socials?.twitter || "";
             form.instagram.value = d.socials?.instagram || "";
             form.linkedin.value = d.socials?.linkedin || "";
-            profilePicPreview.src = d.photoURL || "https://via.placeholder.com/100?text=Profile";
-          } else {
-            profilePicPreview.src = "https://via.placeholder.com/100?text=Profile";
           }
         } catch (error) {
           console.error("Error loading profile:", error);
@@ -214,26 +181,6 @@
     button:hover {
       background-color: #379920;
     }
-    .profile-pic-wrapper {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    #profilePicPreview {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #42b72a;
-      display: block;
-      margin: 0 auto 0.7rem;
-      background: #eee;
-    }
-    input[type="file"] {
-      display: block;
-      margin: 0 auto;
-      cursor: pointer;
-      color: #222;
-    }
     select {
       background-color: white;
       color: #222;
@@ -257,11 +204,6 @@
   <div class="container">
     <h2>Setup Your Profile</h2>
     <form id="profileForm">
-      <div class="profile-pic-wrapper">
-        <img id="profilePicPreview" src="https://via.placeholder.com/100?text=Profile" alt="Profile Picture Preview" />
-        <input type="file" id="profilePic" accept="image/*" />
-      </div>
-
       <div>
         <label for="name">Full Name *</label>
         <input type="text" id="name" name="name" placeholder="Your full name" required />
