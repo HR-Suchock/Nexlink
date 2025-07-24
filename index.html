@@ -2,50 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Welcome | NexLink</title>
-
-  <!-- 🔥 Favicon Links -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NexLink - Social Platform</title>
   <link rel="icon" href="favicon.png" type="image/png" />
-  <link rel="apple-touch-icon" href="favicon.png" />
-  <meta name="theme-color" content="#2c5364" />
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
     body {
-      height: 100vh;
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Segoe UI', sans-serif;
-      overflow: hidden;
+      font-family: sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
       color: white;
-    }
-    .welcome {
-      font-size: 2.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
       text-align: center;
-      animation: fadeInZoom 1.8s ease-in-out forwards;
-      opacity: 0;
-      transform: scale(0.9);
-      letter-spacing: 1px;
+      padding: 20px;
     }
 
-    @keyframes fadeInZoom {
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    p {
+      font-size: 1.2rem;
+      max-width: 600px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      background-color: white;
+      color: #2575fc;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #f0f0f0;
+      color: #6a11cb;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 2rem; }
+      p { font-size: 1rem; padding: 0 10px; }
     }
   </style>
 </head>
 <body>
-  <div class="welcome">Welcome to NexLink</div> 
+  <h1>Welcome to NexLink 👋</h1>
+  <p>NexLink is a Firebase-powered social platform demo built by Humayun Rashid Suchock. This project showcases real-time posting, profile setup, and more.</p>
+  <button id="startBtn">Start</button>
 
+  <!-- Firebase Login Check -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -54,7 +74,7 @@
       apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
       authDomain: "friends-zone-c2fe8.firebaseapp.com",
       projectId: "friends-zone-c2fe8",
-      storageBucket: "friends-zone-c2fe8.firebasestorage.app",
+      storageBucket: "friends-zone-c2fe8.appspot.com",
       messagingSenderId: "962940178101",
       appId: "1:962940178101:web:330aa526d4e7b012dff8fc",
       measurementId: "G-VPGKVYTKD1"
@@ -63,21 +83,19 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Wait for animation before redirect
-    setTimeout(() => {
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          window.location.href = "dashboard.html";
-        } else {
-          const hasAccount = localStorage.getItem("userCreated");
-          if (hasAccount) {
-            window.location.href = "login.html";
-          } else {
-            window.location.href = "signup.html";
-          }
-        }
-      });
-    }, 2000);
+    let isLoggedIn = false;
+
+    onAuthStateChanged(auth, (user) => {
+      isLoggedIn = !!user;
+    });
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      if (isLoggedIn) {
+        window.location.href = "dashboard.html";
+      } else {
+        window.location.href = "login.html";
+      }
+    });
   </script>
 </body>
 </html>
