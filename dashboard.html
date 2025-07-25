@@ -211,8 +211,6 @@
 
   <div class="feed" id="feed"></div>
 
-  <!-- KEEP YOUR EXISTING HTML/CSS SAME -->
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import {
@@ -309,7 +307,6 @@
 
       feed.appendChild(div);
 
-      // Like functionality
       div.querySelector('.like-button').addEventListener('click', async () => {
         if (!currentUser) return alert("Login required.");
         const postRef = doc(db, "posts", postId);
@@ -324,7 +321,6 @@
         }
       });
 
-      // Comment functionality (add new comment)
       div.querySelector('.comment-btn').addEventListener('click', async () => {
         const input = div.querySelector('.comment-input');
         const comment = input.value.trim();
@@ -341,23 +337,63 @@
         }
       });
 
-      // Real-time comment listener
       const commentSection = div.querySelector('.comments');
       const commentsQuery = query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc"));
       onSnapshot(commentsQuery, (commentSnap) => {
         commentSection.innerHTML = "";
         commentSnap.forEach(commentDoc => {
           const c = commentDoc.data();
-          commentSection.innerHTML += `
-            <div>
-              <b>${c.author}</b>: ${c.text}
-              <div class="timestamp">${new Date(c.timestamp).toLocaleString()}</div>
+          const commentId = commentDoc.id;
+          const commentDiv = document.createElement("div");
+          commentDiv.innerHTML = `
+            <b>${c.author}</b>: ${c.text}
+            <div class="timestamp">${new Date(c.timestamp).toLocaleString()}</div>
+            <div class="reply-section" style="margin-top: 5px;">
+              <textarea class="reply-input" placeholder="Reply..." rows="1" style="width: 100%; padding: 4px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+              <button class="reply-btn" style="margin-top: 4px; font-size: 13px; padding: 4px 8px;">Reply</button>
+              <div class="replies" style="margin-top: 8px; margin-left: 10px;"></div>
             </div>
           `;
+          commentSection.appendChild(commentDiv);
+
+          const replyBtn = commentDiv.querySelector('.reply-btn');
+          const replyInput = commentDiv.querySelector('.reply-input');
+          const repliesContainer = commentDiv.querySelector('.replies');
+
+          replyBtn.addEventListener('click', async () => {
+            const replyText = replyInput.value.trim();
+            if (replyText === "") return;
+            try {
+              await addDoc(collection(db, "posts", postId, "comments", commentId, "replies"), {
+                text: replyText,
+                author: currentUserName,
+                timestamp: Date.now()
+              });
+              replyInput.value = "";
+            } catch (err) {
+              alert("Reply failed: " + err.message);
+            }
+          });
+
+          const replyQuery = query(
+            collection(db, "posts", postId, "comments", commentId, "replies"),
+            orderBy("timestamp", "asc")
+          );
+          onSnapshot(replyQuery, (replySnap) => {
+            repliesContainer.innerHTML = "";
+            replySnap.forEach(replyDoc => {
+              const r = replyDoc.data();
+              repliesContainer.innerHTML += `
+                <div style="background: #e9ecef; padding: 5px; margin-bottom: 4px; border-radius: 4px;">
+                  <b>${r.author}</b>: ${r.text}
+                  <div class="timestamp" style="font-size: 11px; color: gray;">${new Date(r.timestamp).toLocaleString()}</div>
+                </div>
+              `;
+            });
+          });
         });
       });
 
-      // Delete button
       const delBtn = div.querySelector('.delete-btn');
       if (delBtn) {
         delBtn.addEventListener('click', async () => {
