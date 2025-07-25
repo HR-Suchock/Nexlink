@@ -32,7 +32,6 @@
     header h1 {
       font-size: 20px;
       font-weight: bold;
-      letter-spacing: 1px;
     }
 
     header button {
@@ -44,7 +43,6 @@
       cursor: pointer;
       font-weight: 600;
       font-size: 14px;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     header button:hover {
@@ -53,14 +51,14 @@
     }
 
     .post-box {
-      display: flex;
-      flex-direction: column;
       background: white;
       padding: 15px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       max-width: 500px;
       margin: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .post-box textarea {
@@ -80,7 +78,6 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
 
     .post-box button:hover {
@@ -104,7 +101,7 @@
 
     .post .user {
       font-weight: bold;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
 
     .post .timestamp {
@@ -125,7 +122,6 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 14px;
-      transition: background-color 0.3s ease;
     }
 
     .like-button:hover {
@@ -139,7 +135,63 @@
     .like-count {
       margin-left: 10px;
       font-size: 14px;
-      vertical-align: middle;
+    }
+
+    .delete-btn {
+      margin-left: 10px;
+      color: red;
+      background: white;
+      border: 1px solid red;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .comment-section {
+      margin-top: 10px;
+    }
+
+    .comment-input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      resize: none;
+      font-size: 14px;
+    }
+
+    .comment-btn {
+      margin-top: 5px;
+      background: #007bff;
+      color: white;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .comments {
+      margin-top: 10px;
+    }
+
+    .comments div {
+      background: #f4f4f4;
+      padding: 6px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .comments b {
+      color: #333;
+    }
+
+    .comments .timestamp {
+      font-size: 11px;
+      color: gray;
     }
   </style>
 </head>
@@ -159,141 +211,183 @@
 
   <div class="feed" id="feed"></div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, onSnapshot,
-      query, orderBy, getDoc, doc, updateDoc, arrayUnion, arrayRemove
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import {
-      getAuth, onAuthStateChanged, signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  <!-- KEEP YOUR EXISTING HTML/CSS SAME -->
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
-      authDomain: "friends-zone-c2fe8.firebaseapp.com",
-      projectId: "friends-zone-c2fe8",
-      storageBucket: "friends-zone-c2fe8.appspot.com",
-      messagingSenderId: "962940178101",
-      appId: "1:962940178101:web:330aa526d4e7b012dff8fc"
-    };
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, onSnapshot, deleteDoc,
+    query, orderBy, getDoc, doc, updateDoc, arrayUnion, arrayRemove
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import {
+    getAuth, onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth();
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
+    authDomain: "friends-zone-c2fe8.firebaseapp.com",
+    projectId: "friends-zone-c2fe8",
+    storageBucket: "friends-zone-c2fe8.appspot.com",
+    messagingSenderId: "962940178101",
+    appId: "1:962940178101:web:330aa526d4e7b012dff8fc"
+  };
 
-    const postText = document.getElementById('postText');
-    const postButton = document.getElementById('postButton');
-    const feed = document.getElementById('feed');
-    const profileBtn = document.getElementById('profileBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth();
 
-    let currentUser = null;
-    let currentUserName = "Anonymous";
+  const postText = document.getElementById('postText');
+  const postButton = document.getElementById('postButton');
+  const feed = document.getElementById('feed');
+  const profileBtn = document.getElementById('profileBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          currentUserName = userData.name || "Anonymous";
+  let currentUser = null;
+  let currentUserName = "Anonymous";
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      const userDocSnap = await getDoc(doc(db, "users", user.uid));
+      if (userDocSnap.exists()) {
+        currentUserName = userDocSnap.data().name || "Anonymous";
+      }
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+
+  postButton.addEventListener('click', async () => {
+    const text = postText.value.trim();
+    if (text === "") return;
+    postButton.disabled = true;
+    try {
+      await addDoc(collection(db, "posts"), {
+        text,
+        author: currentUserName,
+        timestamp: Date.now(),
+        likes: []
+      });
+      postText.value = "";
+    } catch (err) {
+      alert("Error posting: " + err.message);
+    }
+    postButton.disabled = false;
+  });
+
+  const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+  onSnapshot(q, (snapshot) => {
+    feed.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const post = docSnap.data();
+      const postId = docSnap.id;
+      const time = new Date(post.timestamp).toLocaleString();
+      const likesArray = post.likes || [];
+      const likedByUser = currentUser && likesArray.includes(currentUser.uid);
+      const isOwner = currentUserName === post.author;
+
+      const div = document.createElement('div');
+      div.className = 'post';
+
+      div.innerHTML = `
+        <div class="user">${post.author}</div>
+        <div class="timestamp">${time}</div>
+        <div style="white-space: pre-line;">${post.text}</div>
+        <div class="like-section">
+          <button class="like-button ${likedByUser ? 'liked' : ''}" data-id="${postId}">
+            ${likedByUser ? "Unlike ❤️" : "Like 🤍"}
+          </button>
+          <span class="like-count">${likesArray.length} like${likesArray.length !== 1 ? "s" : ""}</span>
+          ${isOwner ? `<button class="delete-btn" data-id="${postId}">Delete</button>` : ""}
+        </div>
+        <div class="comment-section">
+          <textarea class="comment-input" placeholder="Write a comment..." rows="1"></textarea>
+          <button class="comment-btn">Comment</button>
+          <div class="comments"></div>
+        </div>
+      `;
+
+      feed.appendChild(div);
+
+      // Like functionality
+      div.querySelector('.like-button').addEventListener('click', async () => {
+        if (!currentUser) return alert("Login required.");
+        const postRef = doc(db, "posts", postId);
+        try {
+          if (likedByUser) {
+            await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
+          } else {
+            await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
+          }
+        } catch (err) {
+          alert("Like failed: " + err.message);
         }
-      } else {
-        window.location.href = "login.html";
-      }
-    });
+      });
 
-    postButton.addEventListener('click', async () => {
-      const text = postText.value.trim();
-      if (text === "") return;
+      // Comment functionality (add new comment)
+      div.querySelector('.comment-btn').addEventListener('click', async () => {
+        const input = div.querySelector('.comment-input');
+        const comment = input.value.trim();
+        if (comment === "") return;
+        try {
+          await addDoc(collection(db, "posts", postId, "comments"), {
+            text: comment,
+            author: currentUserName,
+            timestamp: Date.now()
+          });
+          input.value = "";
+        } catch (err) {
+          alert("Comment failed: " + err.message);
+        }
+      });
 
-      postButton.disabled = true;
-      try {
-        await addDoc(collection(db, "posts"), {
-          text,
-          author: currentUserName,
-          timestamp: Date.now(),
-          likes: []
-        });
-        postText.value = "";
-      } catch (err) {
-        alert("Error posting: " + err);
-      }
-      postButton.disabled = false;
-    });
-
-    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-
-    onSnapshot(q, (snapshot) => {
-      feed.innerHTML = "";
-      snapshot.forEach(docSnap => {
-        const post = docSnap.data();
-        const postId = docSnap.id;
-
-        const div = document.createElement('div');
-        div.className = 'post';
-
-        const time = new Date(post.timestamp).toLocaleString();
-
-        const likesArray = post.likes || [];
-        const likeCount = likesArray.length;
-        const likedByUser = currentUser && likesArray.includes(currentUser.uid);
-
-        div.innerHTML = `
-          <div class="user">${post.author}</div>
-          <div class="timestamp">${time}</div>
-          <div style="white-space: pre-line;">${post.text}</div>
-          <div class="like-section">
-            <button class="like-button ${likedByUser ? 'liked' : ''}" data-id="${postId}">
-              ${likedByUser ? "Unlike ❤️" : "Like 🤍"}
-            </button>
-            <span class="like-count">${likeCount} like${likeCount !== 1 ? "s" : ""}</span>
-          </div>
-        `;
-
-        feed.appendChild(div);
-
-        const likeBtn = div.querySelector('.like-button');
-        likeBtn.addEventListener('click', async () => {
-          if (!currentUser) {
-            alert("Please login to like posts.");
-            return;
-          }
-          const postRef = doc(db, "posts", postId);
-          try {
-            if (likedByUser) {
-              await updateDoc(postRef, {
-                likes: arrayRemove(currentUser.uid)
-              });
-            } else {
-              await updateDoc(postRef, {
-                likes: arrayUnion(currentUser.uid)
-              });
-            }
-          } catch (error) {
-            alert("Failed to update like: " + error.message);
-            console.error("Like update error:", error);
-          }
+      // Real-time comment listener
+      const commentSection = div.querySelector('.comments');
+      const commentsQuery = query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc"));
+      onSnapshot(commentsQuery, (commentSnap) => {
+        commentSection.innerHTML = "";
+        commentSnap.forEach(commentDoc => {
+          const c = commentDoc.data();
+          commentSection.innerHTML += `
+            <div>
+              <b>${c.author}</b>: ${c.text}
+              <div class="timestamp">${new Date(c.timestamp).toLocaleString()}</div>
+            </div>
+          `;
         });
       });
-    });
 
-    profileBtn.addEventListener('click', () => {
-      window.location.href = "profile-setup.html";
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-      if (confirm("Are you sure you want to logout?")) {
-        try {
-          await signOut(auth);
-          window.location.href = "login.html";
-        } catch (err) {
-          alert("Error logging out: " + err.message);
-        }
+      // Delete button
+      const delBtn = div.querySelector('.delete-btn');
+      if (delBtn) {
+        delBtn.addEventListener('click', async () => {
+          if (confirm("Delete this post?")) {
+            try {
+              await deleteDoc(doc(db, "posts", postId));
+            } catch (err) {
+              alert("Delete failed: " + err.message);
+            }
+          }
+        });
       }
     });
-  </script>
+  });
+
+  profileBtn.addEventListener('click', () => {
+    window.location.href = "profile-setup.html";
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    if (confirm("Logout?")) {
+      try {
+        await signOut(auth);
+        window.location.href = "login.html";
+      } catch (err) {
+        alert("Logout failed: " + err.message);
+      }
+    }
+  });
+</script>
+
 </body>
 </html>
