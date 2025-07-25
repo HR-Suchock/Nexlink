@@ -63,7 +63,7 @@
 <body>
   <h1>Welcome to NexLink 👋</h1>
   <p>NexLink is a Firebase-powered social platform demo built by Humayun Rashid Suchock. This project showcases real-time posting, profile setup, and more.</p>
-  <button id="startBtn">Start</button>
+  <button id="startBtn" disabled>Checking...</button>
 
   <!-- Firebase Login Check -->
   <script type="module">
@@ -83,18 +83,19 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    let isLoggedIn = false;
+    const startBtn = document.getElementById("startBtn");
 
     onAuthStateChanged(auth, (user) => {
-      isLoggedIn = !!user;
-    });
+      startBtn.disabled = false;
+      startBtn.textContent = "Start";
 
-    document.getElementById("startBtn").addEventListener("click", () => {
-      if (isLoggedIn) {
-        window.location.href = "dashboard.html";
-      } else {
-        window.location.href = "login.html";
-      }
+      startBtn.addEventListener("click", () => {
+        if (user) {
+          window.location.href = "dashboard.html";
+        } else {
+          window.location.href = "login.html";
+        }
+      });
     });
   </script>
 </body>
