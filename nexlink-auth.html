@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NexLink Auth - Fixed Password Box</title>
+  <link rel="icon" href="favicon.png" />
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+    body {
+      background: linear-gradient(to right, #b388ff, #ff8bb3);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .container {
+      width: 900px;
+      height: 550px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      backdrop-filter: blur(15px);
+      position: relative;
+      display: flex;
+    }
+    .form-box {
+      width: 50%;
+      padding: 40px;
+      transition: 0.5s ease;
+      position: relative;
+    }
+    .form-box h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    /* Input group to hold input + eye icon */
+    .input-group {
+      position: relative;
+      width: 100%;
+      margin: 10px 0;
+    }
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 40px 12px 15px; /* padding right for eye icon */
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.3);
+      color: #333;
+      box-sizing: border-box;
+      transition: none;
+    }
+
+    /* Eye icon styling */
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      width: 24px;
+      height: 24px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      fill: #555;
+      user-select: none;
+      pointer-events: auto;
+      background: transparent;
+      z-index: 10;
+      transition: fill 0.3s ease;
+    }
+    .toggle-password:hover {
+      fill: #000;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .form-box button {
+      background-color: #4caf50;
+      color: white;
+    }
+    .form-box button:hover {
+      background-color: #43a047;
+    }
+    .panel {
+      width: 50%;
+      background: rgba(0, 0, 0, 0.1);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      text-align: center;
+    }
+    .panel h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .panel p {
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+    .panel button {
+      padding: 12px 30px;
+      font-size: 16px;
+      border: none;
+      background-color: white;
+      color: #333;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .panel button:hover {
+      background-color: #ddd;
+    }
+
+    .container.active .login-box {
+      transform: translateX(100%);
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+    }
+    .container.active .signup-box {
+      transform: translateX(0%);
+      opacity: 1;
+      pointer-events: all;
+      position: relative;
+    }
+    .signup-box {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      padding: 40px;
+      transform: translateX(-100%);
+      opacity: 0;
+      transition: 0.5s ease;
+    }
+    .login-box {
+      transition: 0.5s ease;
+      position: relative;
+    }
+
+    .note {
+      font-size: 12px;
+      margin-top: 10px;
+      color: red;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+        width: 95%;
+      }
+      .form-box,
+      .signup-box,
+      .panel {
+        width: 100%;
+      }
+      .signup-box {
+        position: relative !important;
+        transform: none !important;
+        opacity: 1 !important;
+        pointer-events: all !important;
+      }
+      .container.active .signup-box {
+        transform: none !important;
+      }
+      .container.active .login-box {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <!-- Login Form -->
+    <div class="form-box login-box">
+      <h2>Login to NexLink</h2>
+      <div class="input-group">
+        <input id="loginEmail" type="email" placeholder="Email" />
+      </div>
+      <div class="input-group">
+        <input id="loginPassword" type="password" placeholder="Password" />
+        <svg
+          class="toggle-password"
+          data-target="loginPassword"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          aria-label="Toggle password visibility"
+          role="button"
+          tabindex="0"
+        >
+          <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      </div>
+      <button id="loginBtn">Login</button>
+    </div>
+
+    <!-- Signup Form -->
+    <div class="form-box signup-box">
+      <h2>Create NexLink Account</h2>
+      <div class="input-group">
+        <input id="signupEmail" type="email" placeholder="Email" />
+      </div>
+      <div class="input-group">
+        <input id="signupPassword" type="password" placeholder="Password" />
+        <svg
+          class="toggle-password"
+          data-target="signupPassword"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          aria-label="Toggle password visibility"
+          role="button"
+          tabindex="0"
+        >
+          <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      </div>
+      <div class="input-group">
+        <input
+          id="signupConfirmPassword"
+          type="password"
+          placeholder="Confirm Password"
+        />
+        <svg
+          class="toggle-password"
+          data-target="signupConfirmPassword"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          aria-label="Toggle password visibility"
+          role="button"
+          tabindex="0"
+        >
+          <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      </div>
+      <button id="signupBtn">Sign Up</button>
+      <div class="note">
+        ⚠️ For your safety, I recommend not using your real email. Use a fake one like "username123@gmail.com". Just make sure to remember the password for this email so you can log in next time.
+
+
+      </div>
+    </div>
+
+    <!-- Panel -->
+    <div class="panel">
+      <h2 id="panelText">New here?</h2>
+      <p id="panelSub">Sign up to get started with NexLink.</p>
+      <button id="toggleBtn">Switch to Sign Up</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      initializeApp,
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
+      authDomain: "friends-zone-c2fe8.firebaseapp.com",
+      projectId: "friends-zone-c2fe8",
+      storageBucket: "friends-zone-c2fe8.appspot.com",
+      messagingSenderId: "962940178101",
+      appId: "1:962940178101:web:330aa526d4e7b012dff8fc",
+      measurementId: "G-VPGKVYTKD1",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const container = document.getElementById("container");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const panelText = document.getElementById("panelText");
+    const panelSub = document.getElementById("panelSub");
+
+    const loginEmail = document.getElementById("loginEmail");
+    const loginPassword = document.getElementById("loginPassword");
+    const loginBtn = document.getElementById("loginBtn");
+
+    const signupEmail = document.getElementById("signupEmail");
+    const signupPassword = document.getElementById("signupPassword");
+    const signupConfirmPassword = document.getElementById("signupConfirmPassword");
+    const signupBtn = document.getElementById("signupBtn");
+
+    let showSignup = false;
+
+    toggleBtn.addEventListener("click", () => {
+      showSignup = !showSignup;
+      container.classList.toggle("active", showSignup);
+      panelText.innerText = showSignup ? "Already have an account?" : "New here?";
+      panelSub.innerText = showSignup
+        ? "Login to continue using NexLink."
+        : "Sign up to get started with NexLink.";
+      toggleBtn.innerText = showSignup ? "Switch to Login" : "Switch to Sign Up";
+
+      // Clear inputs on toggle
+      loginEmail.value = "";
+      loginPassword.value = "";
+      signupEmail.value = "";
+      signupPassword.value = "";
+      signupConfirmPassword.value = "";
+    });
+
+    // Password visibility toggle
+    document.querySelectorAll(".toggle-password").forEach((icon) => {
+      icon.addEventListener("click", () => {
+        const targetId = icon.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        if (input.type === "password") {
+          input.type = "text";
+          icon.innerHTML = `
+            <path d="M17.94 17.94A10.22 10.22 0 0 1 12 20c-7 0-11-8-11-8a19.65 19.65 0 0 1 5.47-6.7"/>
+            <path d="M1 1l22 22"/>
+            <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24"/>
+          `;
+        } else {
+          input.type = "password";
+          icon.innerHTML = `
+            <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z" />
+            <circle cx="12" cy="12" r="3" />
+          `;
+        }
+      });
+    });
+
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    signupBtn.addEventListener("click", () => {
+      const email = signupEmail.value.trim();
+      const password = signupPassword.value.trim();
+      const confirmPassword = signupConfirmPassword.value.trim();
+
+      if (!email || !password || !confirmPassword) {
+        alert("Please fill in all signup fields.");
+        return;
+      }
+      if (!validateEmail(email)) {
+        alert("Please enter a valid email.");
+        return;
+      }
+      if (password.length < 6) {
+        alert("Password should be at least 6 characters.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert(`Account created! Welcome ${userCredential.user.email}`);
+          window.location.href = "profile-setup.html";
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
+    });
+
+    loginBtn.addEventListener("click", () => {
+      const email = loginEmail.value.trim();
+      const password = loginPassword.value.trim();
+
+      if (!email || !password) {
+        alert("Please fill in both email and password.");
+        return;
+      }
+      if (!validateEmail(email)) {
+        alert("Please enter a valid email.");
+        return;
+      }
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert(`Welcome back, ${userCredential.user.email}!`);
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>
