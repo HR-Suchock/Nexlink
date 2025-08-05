@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+    .profile-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .profile-card h2 {
+      margin: 0 0 10px;
+    }
+    .profile-card p {
+      margin: 4px 0;
+    }
+    .back-btn {
+      display: block;
+      margin: 20px auto 0;
+      text-align: center;
+      padding: 8px 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="profile-card" id="profileContainer">
+  Loading profile...
+</div>
+<button class="back-btn" onclick="history.back()">🔙 Back</button>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
+    authDomain: "friends-zone-c2fe8.firebaseapp.com",
+    projectId: "friends-zone-c2fe8",
+    storageBucket: "friends-zone-c2fe8.appspot.com",
+    messagingSenderId: "962940178101",
+    appId: "1:962940178101:web:330aa526d4e7b012dff8fc",
+    measurementId: "G-VPGKVYTKD1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const uid = urlParams.get("uid");
+  const profileContainer = document.getElementById("profileContainer");
+
+  if (uid) {
+    (async () => {
+      try {
+        const userRef = doc(db, "users", uid);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+          const user = docSnap.data();
+          profileContainer.innerHTML = `
+            <h2>${user.name || "No name"}</h2>
+            <p><b>Nickname:</b> ${user.nickname || "N/A"}</p>
+            <p><b>Bio:</b> ${user.bio || "No bio yet."}</p>
+            <p><b>Workplace:</b> ${user.workplace || "N/A"}</p>
+            <p><b>Region:</b> ${user.region || "N/A"}</p>
+            <p><b>Religion:</b> ${user.religion || "N/A"}</p>
+            <p><b>Relationship:</b> ${user.relationship || "N/A"}</p>
+            <p><b>Contact:</b> ${user.contact || "N/A"}</p>
+          `;
+        } else {
+          profileContainer.innerHTML = `<p style="color: red;">❌ User profile not found for this UID.</p>`;
+        }
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        profileContainer.innerHTML = `<p style="color: red;">🚨 Error fetching profile. Check console for details.</p>`;
+      }
+    })();
+  } else {
+    profileContainer.innerHTML = `<p style="color: red;"⚠️ No UID found in URL.</p>`;
+  }
+</script>
+
+</body>
+</html>
