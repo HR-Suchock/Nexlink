@@ -3,203 +3,716 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NexLink Realtime Feed</title>
+  <title>NexLink — Realtime Feed</title>
   <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
   <style>
-    /* Your existing styles here (copy from your posted code) */
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      margin: 0;
-      padding: 70px 20px 20px;
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c26;
+      --surface3: #242432;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.14);
+      --accent: #7c5cfc;
+      --accent2: #fc5c7d;
+      --accent-glow: rgba(124,92,252,0.35);
+      --accent2-glow: rgba(252,92,125,0.25);
+      --text-primary: #f0f0f8;
+      --text-secondary: #8888aa;
+      --text-muted: #55556a;
+      --success: #22c55e;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-xs: 6px;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding-top: 72px;
+      padding-bottom: 60px;
+    }
+
+    /* Ambient background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 0%, rgba(124,92,252,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 30% at 80% 100%, rgba(252,92,125,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
     header {
-      background: #000;
-      color: white;
       position: fixed;
       top: 0; left: 0; right: 0;
-      height: 50px;
+      height: 64px;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 0 24px;
       z-index: 1000;
     }
-    header h1 {
-      font-size: 20px;
-      font-weight: bold;
-    }
-    header button {
-      background: transparent;
-      border: 1.8px solid white;
-      color: white;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    header button:hover {
-      background-color: white;
-      color: black;
-    }
-    .post-box {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      max-width: 500px;
-      margin: auto;
+
+    .header-logo {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      text-decoration: none;
     }
-    .post-box textarea {
-      resize: none;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 10px var(--accent-glow);
+      animation: pulse-dot 2.5s ease-in-out infinite;
     }
-    .post-box button {
-      margin-top: 10px;
-      padding: 10px;
-      font-size: 16px;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.3); }
     }
-    .post-box button:hover {
-      background-color: #218838;
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .search-bar {
-      max-width: 500px;
-      margin: 20px auto;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    .feed {
-      margin-top: 30px;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .post {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-    .post .user {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .post .timestamp {
-      font-size: 12px;
-      color: gray;
-      margin-bottom: 8px;
-    }
-    .like-section {
-      margin-top: 10px;
-    }
-    .like-button {
-      background: #ff0066;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .like-button:hover {
-      background: #cc0052;
-    }
-    .like-button.liked {
-      background: #aa0044;
-    }
-    .like-count {
-      margin-left: 10px;
-      font-size: 14px;
-    }
-    .delete-btn {
-      margin-left: 10px;
-      color: red;
-      background: white;
-      border: 1px solid red;
-      padding: 5px 8px;
-      border-radius: 5px;
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-xs);
+      font-family: var(--font-body);
       font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
-    }
-    .comment-section {
-      margin-top: 10px;
-    }
-    .comment-input {
-      width: 100%;
-      padding: 6px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      resize: none;
-      font-size: 14px;
-    }
-    .comment-btn {
-      margin-top: 5px;
-      background: #007bff;
-      color: white;
-      padding: 6px 10px;
       border: none;
-      border-radius: 5px;
+      transition: var(--transition);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: var(--surface2);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .btn-danger {
+      background: rgba(252,92,125,0.1);
+      color: var(--accent2);
+      border: 1px solid rgba(252,92,125,0.2);
+    }
+    .btn-danger:hover {
+      background: rgba(252,92,125,0.18);
+      border-color: rgba(252,92,125,0.4);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 32px 16px 0;
+    }
+
+    /* ── COMPOSE BOX ── */
+    .compose-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .compose-card:focus-within {
+      border-color: rgba(124,92,252,0.4);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.08), 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .compose-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .compose-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .compose-textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      transition: border-color var(--transition);
+      min-height: 90px;
+    }
+    .compose-textarea::placeholder { color: var(--text-muted); }
+    .compose-textarea:focus { border-color: rgba(124,92,252,0.4); }
+
+    .compose-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .btn-post {
+      background: linear-gradient(135deg, var(--accent) 0%, #a56cfc 100%);
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: var(--radius-xs);
+      font-family: var(--font-display);
       font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
       cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(124,92,252,0.3);
     }
-    .comments {
-      margin-top: 10px;
+    .btn-post:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(124,92,252,0.45);
     }
-    .comments div {
-      background: #f4f4f4;
-      padding: 6px;
-      margin-bottom: 5px;
-      border-radius: 5px;
+    .btn-post:active { transform: translateY(0); }
+    .btn-post:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── SEARCH ── */
+    .search-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px 12px 42px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
       font-size: 14px;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
     }
-    .comments b {
-      color: #333;
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus {
+      border-color: rgba(124,92,252,0.4);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.08);
     }
-    .comments .timestamp {
+
+    /* ── FEED ── */
+    #feed { display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── POST CARD ── */
+    .post {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      animation: post-in 0.35s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    .post:hover {
+      border-color: var(--border-hover);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+
+    @keyframes post-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .post-body { padding: 20px 20px 16px; }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .post-author-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 13px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .post-author-info { display: flex; flex-direction: column; gap: 1px; }
+
+    .author-link {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .author-link:hover { color: var(--accent); }
+
+    .post-time {
       font-size: 11px;
-      color: gray;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
     }
+
+    .post-text {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--text-primary);
+      white-space: pre-line;
+      word-break: break-word;
+    }
+
+    /* ── POST ACTIONS BAR ── */
+    .post-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius-xs);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+    .action-btn:hover { background: var(--surface3); color: var(--text-primary); }
+
+    .like-btn { }
+    .like-btn.liked {
+      color: var(--accent2);
+    }
+    .like-btn.liked .heart-icon { fill: var(--accent2); }
+    .like-btn:hover .heart-icon { fill: var(--accent2); }
+
+    .heart-icon {
+      width: 15px; height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      transition: var(--transition);
+    }
+    .like-btn.liked .heart-icon { stroke: var(--accent2); }
+
+    .like-count-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .delete-btn-new {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: var(--radius-xs);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: rgba(252,92,125,0.06);
+      border: 1px solid rgba(252,92,125,0.15);
+      color: #ff6b8a;
+      transition: var(--transition);
+    }
+    .delete-btn-new:hover {
+      background: rgba(252,92,125,0.14);
+      border-color: rgba(252,92,125,0.35);
+    }
+
+    /* ── COMMENT SECTION ── */
+    .comment-area {
+      padding: 0 20px 18px;
+    }
+
+    .comment-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      margin-bottom: 12px;
+      padding: 4px 0;
+      background: none;
+      border: none;
+      transition: color var(--transition);
+    }
+    .comment-toggle:hover { color: var(--accent); }
+
+    .comment-input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .comment-textarea {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 300;
+      resize: none;
+      outline: none;
+      transition: border-color var(--transition);
+      min-height: 40px;
+    }
+    .comment-textarea::placeholder { color: var(--text-muted); }
+    .comment-textarea:focus { border-color: rgba(124,92,252,0.4); }
+
+    .btn-comment {
+      background: linear-gradient(135deg, var(--accent), #a56cfc);
+      color: white;
+      border: none;
+      padding: 0 16px;
+      border-radius: var(--radius-xs);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      align-self: flex-end;
+      height: 40px;
+    }
+    .btn-comment:hover {
+      box-shadow: 0 4px 16px rgba(124,92,252,0.35);
+      transform: translateY(-1px);
+    }
+
+    /* Comments list */
+    .comments-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .comment-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      animation: post-in 0.2s ease both;
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .comment-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a56cfc, #fc5c7d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 10px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .comment-author {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    .comment-ts {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .comment-text {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      word-break: break-word;
+    }
+
+    /* Replies */
+    .reply-area {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .reply-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .reply-textarea {
+      flex: 1;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 8px 10px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 300;
+      resize: none;
+      outline: none;
+      min-height: 34px;
+      transition: border-color var(--transition);
+    }
+    .reply-textarea::placeholder { color: var(--text-muted); }
+    .reply-textarea:focus { border-color: rgba(124,92,252,0.35); }
+
+    .btn-reply {
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 0 12px;
+      height: 34px;
+      border-radius: var(--radius-xs);
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      align-self: flex-end;
+      white-space: nowrap;
+    }
+    .btn-reply:hover {
+      background: rgba(124,92,252,0.12);
+      border-color: rgba(124,92,252,0.35);
+    }
+
+    .replies-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .reply-item {
+      background: var(--surface3);
+      border-radius: var(--radius-xs);
+      padding: 8px 10px;
+      border-left: 2px solid rgba(124,92,252,0.3);
+    }
+
+    .reply-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .reply-author {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    .reply-ts {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .reply-text {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state svg { opacity: 0.3; margin-bottom: 16px; }
+    .empty-state h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 6px; color: var(--text-secondary); }
+    .empty-state p { font-size: 13px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface3);
+      border: 1px solid var(--border-hover);
+      color: var(--text-primary);
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font-body);
+      z-index: 9999;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
   </style>
 </head>
 <body>
 
+<div id="toast"></div>
+
 <header>
-  <h1>NexLink</h1>
-  <div>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
+  <a class="header-logo" href="#">
+    <div class="logo-dot"></div>
+    NexLink
+  </a>
+  <div class="header-actions">
+    <button id="profileBtn" class="btn btn-ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Profile
+    </button>
+    <button id="logoutBtn" class="btn btn-danger">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
   </div>
 </header>
 
-<div class="post-box">
-  <textarea id="postText" rows="4" placeholder="What's on your mind?"></textarea>
-  <button id="postButton">Post</button>
-</div>
+<main>
+  <!-- Compose Box -->
+  <div class="compose-card">
+    <div class="compose-header">
+      <div class="avatar" id="composeAvatar">?</div>
+      <div class="compose-label">Share something with your network</div>
+    </div>
+    <textarea class="compose-textarea" id="postText" rows="3" placeholder="What's on your mind?"></textarea>
+    <div class="compose-footer">
+      <button class="btn-post" id="postButton">
+        Publish
+        <svg style="margin-left:6px;display:inline" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
 
-<div class="search-bar">
-  <input type="text" id="searchInput" placeholder="Search by author or post content..." />
-</div>
+  <!-- Search -->
+  <div class="search-wrapper">
+    <span class="search-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </span>
+    <input class="search-input" id="searchInput" type="search" placeholder="Search posts or people…" />
+  </div>
 
-<div class="feed" id="feed"></div>
+  <!-- Feed -->
+  <div id="feed"></div>
+</main>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -231,9 +744,25 @@
   const searchInput = document.getElementById('searchInput');
   const profileBtn = document.getElementById('profileBtn');
   const logoutBtn = document.getElementById('logoutBtn');
+  const composeAvatar = document.getElementById('composeAvatar');
+  const toast = document.getElementById('toast');
 
   let currentUser = null;
   let currentUserName = "Anonymous";
+
+  // Toast helper
+  let toastTimer;
+  function showToast(msg) {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  // Get initials
+  function getInitials(name) {
+    return name ? name.trim().split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : '?';
+  }
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -242,6 +771,7 @@
       if (userDocSnap.exists()) {
         currentUserName = userDocSnap.data().name || "Anonymous";
       }
+      composeAvatar.textContent = getInitials(currentUserName);
       renderPosts();
     } else {
       window.location.href = "nexlink-auth.html";
@@ -261,8 +791,9 @@
         likes: []
       });
       postText.value = "";
+      showToast("✓ Posted successfully");
     } catch (err) {
-      alert("Error posting: " + err.message);
+      showToast("Error: " + err.message);
     }
     postButton.disabled = false;
   });
@@ -281,153 +812,199 @@
 
   searchInput.addEventListener("input", renderPosts);
 
+  function timeAgo(ts) {
+    const diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+    return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
   function renderPosts() {
     if (!currentUser) return;
     const searchTerm = searchInput.value.toLowerCase();
     feed.innerHTML = "";
 
-    allPosts
-      .filter(post =>
-        post.author.toLowerCase().includes(searchTerm) ||
-        post.text.toLowerCase().includes(searchTerm)
-      )
-      .forEach(post => {
-        const postId = post.id;
-        const time = new Date(post.timestamp).toLocaleString();
-        const likesArray = post.likes || [];
-        const likedByUser = currentUser && likesArray.includes(currentUser.uid);
-        const isOwner = currentUserName === post.author;
+    const filtered = allPosts.filter(post =>
+      post.author.toLowerCase().includes(searchTerm) ||
+      post.text.toLowerCase().includes(searchTerm)
+    );
 
-        const div = document.createElement('div');
-        div.className = 'post';
+    if (filtered.length === 0) {
+      feed.innerHTML = `
+        <div class="empty-state">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <h3>${searchTerm ? 'No results found' : 'No posts yet'}</h3>
+          <p>${searchTerm ? 'Try a different search term.' : 'Be the first to share something!'}</p>
+        </div>`;
+      return;
+    }
 
-        div.innerHTML = `
-          <div class="user">
-            <a href="#" class="author-link" data-uid="${post.userId}" style="color: #007bff; text-decoration: none;">
-              ${post.author}
-            </a>
-          </div>
-          <div class="timestamp">${time}</div>
-          <div style="white-space: pre-line;">${post.text}</div>
-          <div class="like-section">
-            <button class="like-button ${likedByUser ? 'liked' : ''}" data-id="${postId}">
-              ${likedByUser ? "Unlike❤️" : "Like 🤍"}
-            </button>
-            <span class="like-count">${likesArray.length} like${likesArray.length !== 1 ? "s" : ""}</span>
-            ${isOwner ? `<button class="delete-btn" data-id="${postId}">Delete</button>` : ""}
-          </div>
-          <div class="comment-section">
-            <textarea class="comment-input" placeholder="Write a comment..." rows="1"></textarea>
-            <button class="comment-btn">Comment</button>
-            <div class="comments"></div>
-          </div>
-        `;
+    filtered.forEach((post, idx) => {
+      const postId = post.id;
+      const likesArray = post.likes || [];
+      const likedByUser = currentUser && likesArray.includes(currentUser.uid);
+      const isOwner = currentUserName === post.author;
 
-        feed.appendChild(div);
+      const div = document.createElement('div');
+      div.className = 'post';
+      div.style.animationDelay = `${idx * 0.04}s`;
 
-        div.querySelector('.like-button').addEventListener('click', async () => {
-          if (!currentUser) return alert("Login required.");
-          const postRef = doc(db, "posts", postId);
-          try {
-            if (likedByUser) {
-              await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
-            } else {
-              await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
-            }
-          } catch (err) {
-            alert("Like failed: " + err.message);
-          }
-        });
-
-        div.querySelector('.comment-btn').addEventListener('click', async () => {
-          const input = div.querySelector('.comment-input');
-          const comment = input.value.trim();
-          if (comment === "") return;
-          try {
-            await addDoc(collection(db, "posts", postId, "comments"), {
-              text: comment,
-              author: currentUserName,
-              timestamp: Date.now()
-            });
-            input.value = "";
-          } catch (err) {
-            alert("Comment failed: " + err.message);
-          }
-        });
-
-        const commentSection = div.querySelector('.comments');
-        const commentsQuery = query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc"));
-        onSnapshot(commentsQuery, (commentSnap) => {
-          commentSection.innerHTML = "";
-          commentSnap.forEach(commentDoc => {
-            const c = commentDoc.data();
-            const commentId = commentDoc.id;
-            const commentDiv = document.createElement("div");
-            commentDiv.innerHTML = `
-              <b>${c.author}</b>: ${c.text}
-              <div class="timestamp">${new Date(c.timestamp).toLocaleString()}</div>
-              <div class="reply-section" style="margin-top: 5px;">
-                <textarea class="reply-input" placeholder="Reply..." rows="1" style="width: 100%; padding: 4px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
-                <button class="reply-btn" style="margin-top: 4px; font-size: 13px; padding: 4px 8px;">Reply</button>
-                <div class="replies" style="margin-top: 8px; margin-left: 10px;"></div>
+      div.innerHTML = `
+        <div class="post-body">
+          <div class="post-meta">
+            <div class="post-author-row">
+              <div class="post-avatar">${getInitials(post.author)}</div>
+              <div class="post-author-info">
+                <a href="#" class="author-link" data-uid="${post.userId}">${post.author}</a>
+                <span class="post-time">${timeAgo(post.timestamp)}</span>
               </div>
-            `;
-            commentSection.appendChild(commentDiv);
+            </div>
+          </div>
+          <div class="post-text">${post.text}</div>
+        </div>
 
-            const replyBtn = commentDiv.querySelector('.reply-btn');
-            const replyInput = commentDiv.querySelector('.reply-input');
-            const repliesContainer = commentDiv.querySelector('.replies');
+        <div class="post-actions">
+          <button class="action-btn like-btn ${likedByUser ? 'liked' : ''}" data-id="${postId}">
+            <svg class="heart-icon" viewBox="0 0 24 24">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            ${likedByUser ? 'Liked' : 'Like'}
+          </button>
+          <span class="like-count-badge">${likesArray.length > 0 ? likesArray.length + (likesArray.length === 1 ? ' like' : ' likes') : ''}</span>
+          ${isOwner ? `<button class="delete-btn-new" data-id="${postId}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>Delete</button>` : ''}
+        </div>
 
-            replyBtn.addEventListener('click', async () => {
-              const replyText = replyInput.value.trim();
-              if (replyText === "") return;
-              try {
-                await addDoc(collection(db, "posts", postId, "comments", commentId, "replies"), {
-                  text: replyText,
-                  author: currentUserName,
-                  timestamp: Date.now()
-                });
-                replyInput.value = "";
-              } catch (err) {
-                alert("Reply failed: " + err.message);
-              }
-            });
+        <div class="comment-area">
+          <div class="comment-input-row">
+            <textarea class="comment-textarea" placeholder="Add a comment…" rows="1"></textarea>
+            <button class="btn-comment">Send</button>
+          </div>
+          <div class="comments-list"></div>
+        </div>
+      `;
 
-            const replyQuery = query(
-              collection(db, "posts", postId, "comments", commentId, "replies"),
-              orderBy("timestamp", "asc")
-            );
-            onSnapshot(replyQuery, (replySnap) => {
-              repliesContainer.innerHTML = "";
-              replySnap.forEach(replyDoc => {
-                const r = replyDoc.data();
-                repliesContainer.innerHTML += `
-                  <div style="background: #e9ecef; padding: 5px; margin-bottom: 4px; border-radius: 4px;">
-                    <b>${r.author}</b>: ${r.text}
-                    <div class="timestamp" style="font-size: 11px; color: gray;">${new Date(r.timestamp).toLocaleString()}</div>
-                  </div>
-                `;
-              });
-            });
-          });
-        });
+      feed.appendChild(div);
 
-        const delBtn = div.querySelector('.delete-btn');
-        if (delBtn) {
-          delBtn.addEventListener('click', async () => {
-            if (confirm("Delete this post?")) {
-              try {
-                await deleteDoc(doc(db, "posts", postId));
-              } catch (err) {
-                alert("Delete failed: " + err.message);
-              }
-            }
-          });
+      // Like
+      div.querySelector('.like-btn').addEventListener('click', async () => {
+        if (!currentUser) return showToast("Login required.");
+        const postRef = doc(db, "posts", postId);
+        try {
+          if (likedByUser) {
+            await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
+          } else {
+            await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
+          }
+        } catch (err) {
+          showToast("Like failed: " + err.message);
         }
       });
+
+      // Comment
+      const commentTextarea = div.querySelector('.comment-textarea');
+      div.querySelector('.btn-comment').addEventListener('click', async () => {
+        const comment = commentTextarea.value.trim();
+        if (comment === "") return;
+        try {
+          await addDoc(collection(db, "posts", postId, "comments"), {
+            text: comment,
+            author: currentUserName,
+            timestamp: Date.now()
+          });
+          commentTextarea.value = "";
+        } catch (err) {
+          showToast("Comment failed: " + err.message);
+        }
+      });
+
+      // Live comments
+      const commentsList = div.querySelector('.comments-list');
+      const commentsQuery = query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc"));
+      onSnapshot(commentsQuery, (commentSnap) => {
+        commentsList.innerHTML = "";
+        commentSnap.forEach(commentDoc => {
+          const c = commentDoc.data();
+          const commentId = commentDoc.id;
+
+          const commentEl = document.createElement('div');
+          commentEl.className = 'comment-item';
+          commentEl.innerHTML = `
+            <div class="comment-header">
+              <div class="comment-avatar">${getInitials(c.author)}</div>
+              <span class="comment-author">${c.author}</span>
+              <span class="comment-ts">${timeAgo(c.timestamp)}</span>
+            </div>
+            <div class="comment-text">${c.text}</div>
+            <div class="reply-area">
+              <div class="reply-input-row">
+                <textarea class="reply-textarea" placeholder="Reply…" rows="1"></textarea>
+                <button class="btn-reply">↩ Reply</button>
+              </div>
+              <div class="replies-list"></div>
+            </div>
+          `;
+          commentsList.appendChild(commentEl);
+
+          const replyTextarea = commentEl.querySelector('.reply-textarea');
+          const repliesContainer = commentEl.querySelector('.replies-list');
+
+          commentEl.querySelector('.btn-reply').addEventListener('click', async () => {
+            const replyText = replyTextarea.value.trim();
+            if (replyText === "") return;
+            try {
+              await addDoc(collection(db, "posts", postId, "comments", commentId, "replies"), {
+                text: replyText,
+                author: currentUserName,
+                timestamp: Date.now()
+              });
+              replyTextarea.value = "";
+            } catch (err) {
+              showToast("Reply failed: " + err.message);
+            }
+          });
+
+          const replyQuery = query(
+            collection(db, "posts", postId, "comments", commentId, "replies"),
+            orderBy("timestamp", "asc")
+          );
+          onSnapshot(replyQuery, (replySnap) => {
+            repliesContainer.innerHTML = "";
+            replySnap.forEach(replyDoc => {
+              const r = replyDoc.data();
+              const replyEl = document.createElement('div');
+              replyEl.className = 'reply-item';
+              replyEl.innerHTML = `
+                <div class="reply-meta">
+                  <span class="reply-author">@${r.author}</span>
+                  <span class="reply-ts">${timeAgo(r.timestamp)}</span>
+                </div>
+                <div class="reply-text">${r.text}</div>
+              `;
+              repliesContainer.appendChild(replyEl);
+            });
+          });
+        });
+      });
+
+      // Delete
+      const delBtn = div.querySelector('.delete-btn-new');
+      if (delBtn) {
+        delBtn.addEventListener('click', async () => {
+          if (confirm("Delete this post?")) {
+            try {
+              await deleteDoc(doc(db, "posts", postId));
+              showToast("Post deleted");
+            } catch (err) {
+              showToast("Delete failed: " + err.message);
+            }
+          }
+        });
+      }
+    });
   }
 
-  // Author name click -> go to profile page
+  // Author link click
   document.addEventListener("click", function (e) {
     if (e.target.classList.contains("author-link")) {
       e.preventDefault();
@@ -446,7 +1023,7 @@
         await signOut(auth);
         window.location.href = "nexlink-auth.html";
       } catch (err) {
-        alert("Logout failed: " + err.message);
+        showToast("Logout failed: " + err.message);
       }
     }
   });
