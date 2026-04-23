@@ -3,276 +3,513 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NexLink Auth - Fixed Password Box</title>
+  <title>NexLink — Auth</title>
   <link rel="icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
   <style>
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
-      font-family: "Segoe UI", sans-serif;
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c26;
+      --surface3: #242432;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.14);
+      --accent: #7c5cfc;
+      --accent2: #fc5c7d;
+      --accent-glow: rgba(124,92,252,0.3);
+      --accent2-glow: rgba(252,92,125,0.2);
+      --text-primary: #f0f0f8;
+      --text-secondary: #8888aa;
+      --text-muted: #55556a;
+      --success: #22c55e;
+      --radius: 20px;
+      --radius-sm: 12px;
+      --radius-xs: 8px;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
     body {
-      background: linear-gradient(to right, #b388ff, #ff8bb3);
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
       min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .container {
-      width: 900px;
-      height: 550px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      backdrop-filter: blur(15px);
-      position: relative;
       display: flex;
-    }
-    .form-box {
-      width: 50%;
-      padding: 40px;
-      transition: 0.5s ease;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
       position: relative;
-    }
-    .form-box h2 {
-      margin-bottom: 20px;
-      color: #333;
+      overflow: hidden;
     }
 
-    /* Input group to hold input + eye icon */
-    .input-group {
+    /* Ambient blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(124,92,252,0.15) 0%, transparent 70%);
+      top: -180px; left: -180px;
+      animation: drift1 9s ease-in-out infinite alternate;
+    }
+    .blob-2 {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(252,92,125,0.1) 0%, transparent 70%);
+      bottom: -120px; right: -120px;
+      animation: drift2 11s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(50px,35px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-35px,-50px); } }
+
+    /* Grid */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── CARD ── */
+    .auth-card {
       position: relative;
+      z-index: 1;
       width: 100%;
-      margin: 10px 0;
-    }
-    input[type="email"],
-    input[type="password"],
-    input[type="text"] {
-      width: 100%;
-      padding: 12px 40px 12px 15px; /* padding right for eye icon */
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      background: rgba(255,255,255,0.3);
-      color: #333;
-      box-sizing: border-box;
-      transition: none;
+      max-width: 880px;
+      min-height: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+      display: flex;
+      overflow: hidden;
+      animation: card-in 0.5s cubic-bezier(0.4,0,0.2,1) both;
     }
 
-    /* Eye icon styling */
-    .toggle-password {
-      position: absolute;
-      top: 50%;
-      right: 12px;
-      width: 24px;
-      height: 24px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      fill: #555;
-      user-select: none;
-      pointer-events: auto;
-      background: transparent;
-      z-index: 10;
-      transition: fill 0.3s ease;
-    }
-    .toggle-password:hover {
-      fill: #000;
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .form-box button {
-      background-color: #4caf50;
-      color: white;
-    }
-    .form-box button:hover {
-      background-color: #43a047;
-    }
+    /* ── PANEL (side) ── */
     .panel {
-      width: 50%;
-      background: rgba(0, 0, 0, 0.1);
-      color: white;
+      width: 42%;
+      flex-shrink: 0;
+      background: linear-gradient(160deg, rgba(124,92,252,0.18) 0%, rgba(252,92,125,0.12) 100%);
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 30px;
+      padding: 40px 32px;
       text-align: center;
-    }
-    .panel h2 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    .panel p {
-      font-size: 16px;
-      margin-bottom: 30px;
-    }
-    .panel button {
-      padding: 12px 30px;
-      font-size: 16px;
-      border: none;
-      background-color: white;
-      color: #333;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .panel button:hover {
-      background-color: #ddd;
+      position: relative;
+      overflow: hidden;
     }
 
-    .container.active .login-box {
+    .panel::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,92,252,0.2) 0%, transparent 70%);
+      top: -80px; left: -80px;
+    }
+
+    .panel-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: var(--text-primary);
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 12px var(--accent-glow);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.7; transform: scale(1.4); }
+    }
+
+    .panel h2 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      position: relative; z-index: 1;
+    }
+
+    .panel p {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 32px;
+      position: relative; z-index: 1;
+    }
+
+    .btn-panel {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 28px;
+      border-radius: var(--radius-xs);
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.06);
+      color: var(--text-primary);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative; z-index: 1;
+      letter-spacing: 0.2px;
+    }
+    .btn-panel:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.3);
+      transform: translateY(-1px);
+    }
+
+    /* ── FORMS AREA ── */
+    .forms-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-pane {
+      position: absolute;
+      inset: 0;
+      padding: 44px 40px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.45s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto;
+    }
+
+    /* Login: default visible */
+    #loginPane {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    /* Signup: default hidden to the right */
+    #signupPane {
       transform: translateX(100%);
       opacity: 0;
       pointer-events: none;
-      position: absolute;
     }
-    .container.active .signup-box {
-      transform: translateX(0%);
-      opacity: 1;
-      pointer-events: all;
-      position: relative;
-    }
-    .signup-box {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 50%;
-      padding: 40px;
+
+    /* Active = showing signup */
+    .auth-card.show-signup #loginPane {
       transform: translateX(-100%);
       opacity: 0;
-      transition: 0.5s ease;
+      pointer-events: none;
     }
-    .login-box {
-      transition: 0.5s ease;
+    .auth-card.show-signup #signupPane {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .form-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .form-subtitle {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    /* Fields */
+    .field { margin-bottom: 14px; }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .input-wrap {
       position: relative;
     }
 
-    .note {
-      font-size: 12px;
-      margin-top: 10px;
-      color: red;
+    .input-wrap input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 12px 44px 12px 14px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .input-wrap input::placeholder { color: var(--text-muted); }
+    .input-wrap input:focus {
+      border-color: rgba(124,92,252,0.5);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.08);
     }
 
-    @media (max-width: 768px) {
-      .container {
+    .eye-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      padding: 0;
+      transition: color var(--transition);
+      width: 20px; height: 20px;
+    }
+    .eye-btn:hover { color: var(--text-secondary); }
+    .eye-btn svg { width: 16px; height: 16px; }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--accent) 0%, #a56cfc 50%, var(--accent2) 100%);
+      background-size: 200% 200%;
+      background-position: 0% 50%;
+      border: none;
+      border-radius: var(--radius-xs);
+      color: white;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), background-position 0.4s;
+      box-shadow: 0 5px 24px rgba(124,92,252,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(124,92,252,0.5);
+      background-position: 100% 50%;
+    }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Warning note */
+    .note-box {
+      margin-top: 18px;
+      padding: 11px 14px;
+      background: rgba(252,92,125,0.07);
+      border: 1px solid rgba(252,92,125,0.18);
+      border-radius: var(--radius-xs);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .note-box strong { color: #ff8fa3; font-weight: 500; }
+
+    /* Field error */
+    .field-error {
+      font-size: 11px;
+      color: var(--accent2);
+      margin-top: 5px;
+      display: none;
+    }
+    .field-error.visible { display: block; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface3);
+      border: 1px solid var(--border-hover);
+      color: var(--text-primary);
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font-body);
+      z-index: 9999;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.error { border-color: rgba(252,92,125,0.4); color: #ff6b8a; }
+    #toast.success { border-color: rgba(34,197,94,0.4); color: #4ade80; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .auth-card {
         flex-direction: column;
-        height: auto;
-        width: 95%;
+        min-height: unset;
+        max-width: 420px;
       }
-      .form-box,
-      .signup-box,
       .panel {
         width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 28px 24px;
+        min-height: 0;
       }
-      .signup-box {
-        position: relative !important;
-        transform: none !important;
-        opacity: 1 !important;
-        pointer-events: all !important;
-      }
-      .container.active .signup-box {
-        transform: none !important;
-      }
-      .container.active .login-box {
-        display: none;
-      }
+      .panel::before { display: none; }
+      .forms-area { min-height: 480px; }
+      .form-pane { padding: 28px 24px; }
     }
   </style>
 </head>
 <body>
-  <div class="container" id="container">
-    <!-- Login Form -->
-    <div class="form-box login-box">
-      <h2>Login to NexLink</h2>
-      <div class="input-group">
-        <input id="loginEmail" type="email" placeholder="Email" />
-      </div>
-      <div class="input-group">
-        <input id="loginPassword" type="password" placeholder="Password" />
-        <svg
-          class="toggle-password"
-          data-target="loginPassword"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          aria-label="Toggle password visibility"
-          role="button"
-          tabindex="0"
-        >
-          <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      </div>
-      <button id="loginBtn">Login</button>
-    </div>
 
-    <!-- Signup Form -->
-    <div class="form-box signup-box">
-      <h2>Create NexLink Account</h2>
-      <div class="input-group">
-        <input id="signupEmail" type="email" placeholder="Email" />
-      </div>
-      <div class="input-group">
-        <input id="signupPassword" type="password" placeholder="Password" />
-        <svg
-          class="toggle-password"
-          data-target="signupPassword"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          aria-label="Toggle password visibility"
-          role="button"
-          tabindex="0"
-        >
-          <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      </div>
-      <div class="input-group">
-        <input
-          id="signupConfirmPassword"
-          type="password"
-          placeholder="Confirm Password"
-        />
-        <svg
-          class="toggle-password"
-          data-target="signupConfirmPassword"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          aria-label="Toggle password visibility"
-          role="button"
-          tabindex="0"
-        >
-          <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      </div>
-      <button id="signupBtn">Sign Up</button>
-      <div class="note">
-        ⚠️ For your safety, I recommend not using your real email. Use a fake one like "username123@gmail.com". Just make sure to remember the password for this email so you can log in next time.
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div id="toast"></div>
 
-
-      </div>
-    </div>
+  <div class="auth-card" id="authCard">
 
     <!-- Panel -->
     <div class="panel">
-      <h2 id="panelText">New here?</h2>
-      <p id="panelSub">Sign up to get started with NexLink.</p>
-      <button id="toggleBtn">Switch to Sign Up</button>
+      <div class="panel-logo">
+        <div class="logo-dot"></div>
+        NexLink
+      </div>
+      <h2 id="panelTitle">New here?</h2>
+      <p id="panelSub">Create an account and start connecting with people in real time.</p>
+      <button class="btn-panel" id="toggleBtn">
+        Create Account
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+
+    <!-- Forms -->
+    <div class="forms-area">
+
+      <!-- Login -->
+      <div class="form-pane" id="loginPane">
+        <div class="form-title">Welcome back</div>
+        <div class="form-subtitle">Sign in to your NexLink account</div>
+
+        <div class="field">
+          <label>Email address</label>
+          <div class="input-wrap">
+            <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <input id="loginPassword" type="password" placeholder="Your password" autocomplete="current-password" />
+            <button class="eye-btn" type="button" data-target="loginPassword" aria-label="Toggle password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="loginBtn">
+          Sign In
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        </button>
+      </div>
+
+      <!-- Signup -->
+      <div class="form-pane" id="signupPane">
+        <div class="form-title">Create account</div>
+        <div class="form-subtitle">Join NexLink — it only takes a moment</div>
+
+        <div class="field">
+          <label>Email address</label>
+          <div class="input-wrap">
+            <input id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <input id="signupPassword" type="password" placeholder="Min. 6 characters" autocomplete="new-password" />
+            <button class="eye-btn" type="button" data-target="signupPassword" aria-label="Toggle password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Confirm password</label>
+          <div class="input-wrap">
+            <input id="signupConfirmPassword" type="password" placeholder="Repeat password" autocomplete="new-password" />
+            <button class="eye-btn" type="button" data-target="signupConfirmPassword" aria-label="Toggle password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="signupBtn">
+          Create Account
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </button>
+
+        <div class="note-box">
+          <strong>⚠️ Privacy tip:</strong> For safety, consider using a non-personal email like <em>username123@gmail.com</em>. Just remember your password for next time.
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script type="module">
-    import {
-      initializeApp,
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import {
       getAuth,
       createUserWithEmailAndPassword,
@@ -292,120 +529,128 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const container = document.getElementById("container");
-    const toggleBtn = document.getElementById("toggleBtn");
-    const panelText = document.getElementById("panelText");
-    const panelSub = document.getElementById("panelSub");
+    const authCard   = document.getElementById("authCard");
+    const toggleBtn  = document.getElementById("toggleBtn");
+    const panelTitle = document.getElementById("panelTitle");
+    const panelSub   = document.getElementById("panelSub");
 
-    const loginEmail = document.getElementById("loginEmail");
+    const loginEmail    = document.getElementById("loginEmail");
     const loginPassword = document.getElementById("loginPassword");
-    const loginBtn = document.getElementById("loginBtn");
+    const loginBtn      = document.getElementById("loginBtn");
 
-    const signupEmail = document.getElementById("signupEmail");
-    const signupPassword = document.getElementById("signupPassword");
+    const signupEmail           = document.getElementById("signupEmail");
+    const signupPassword        = document.getElementById("signupPassword");
     const signupConfirmPassword = document.getElementById("signupConfirmPassword");
-    const signupBtn = document.getElementById("signupBtn");
+    const signupBtn             = document.getElementById("signupBtn");
+
+    // Toast
+    let toastTimer;
+    function showToast(msg, type = '') {
+      clearTimeout(toastTimer);
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'show ' + type;
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    // Spinner helpers
+    function setLoading(btn, loading, originalHTML) {
+      if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg style="animation:spin .7s linear infinite;width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-9-9"/></svg> Loading…`;
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+      }
+    }
 
     let showSignup = false;
 
     toggleBtn.addEventListener("click", () => {
       showSignup = !showSignup;
-      container.classList.toggle("active", showSignup);
-      panelText.innerText = showSignup ? "Already have an account?" : "New here?";
-      panelSub.innerText = showSignup
-        ? "Login to continue using NexLink."
-        : "Sign up to get started with NexLink.";
-      toggleBtn.innerText = showSignup ? "Switch to Login" : "Switch to Sign Up";
+      authCard.classList.toggle("show-signup", showSignup);
 
-      // Clear inputs on toggle
-      loginEmail.value = "";
-      loginPassword.value = "";
-      signupEmail.value = "";
-      signupPassword.value = "";
-      signupConfirmPassword.value = "";
+      if (showSignup) {
+        panelTitle.textContent = "Already have an account?";
+        panelSub.textContent   = "Sign in and pick up right where you left off.";
+        toggleBtn.innerHTML    = `Sign In <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+      } else {
+        panelTitle.textContent = "New here?";
+        panelSub.textContent   = "Create an account and start connecting with people in real time.";
+        toggleBtn.innerHTML    = `Create Account <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+      }
+
+      // Clear inputs
+      [loginEmail, loginPassword, signupEmail, signupPassword, signupConfirmPassword]
+        .forEach(el => el.value = "");
     });
 
-    // Password visibility toggle
-    document.querySelectorAll(".toggle-password").forEach((icon) => {
-      icon.addEventListener("click", () => {
-        const targetId = icon.getAttribute("data-target");
-        const input = document.getElementById(targetId);
-        if (input.type === "password") {
-          input.type = "text";
-          icon.innerHTML = `
-            <path d="M17.94 17.94A10.22 10.22 0 0 1 12 20c-7 0-11-8-11-8a19.65 19.65 0 0 1 5.47-6.7"/>
-            <path d="M1 1l22 22"/>
-            <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24"/>
-          `;
-        } else {
-          input.type = "password";
-          icon.innerHTML = `
-            <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z" />
-            <circle cx="12" cy="12" r="3" />
-          `;
-        }
+    // Eye toggle
+    document.querySelectorAll(".eye-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const input = document.getElementById(btn.dataset.target);
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        btn.innerHTML = isPassword
+          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.22 10.22 0 0 1 12 20c-7 0-11-8-11-8a19.65 19.65 0 0 1 5.47-6.7"/><path d="M1 1l22 22"/><path d="M9.88 9.88a3 3 0 0 0 4.24 4.24"/></svg>`
+          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
       });
     });
 
     function validateEmail(email) {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return re.test(email);
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
-    signupBtn.addEventListener("click", () => {
-      const email = signupEmail.value.trim();
-      const password = signupPassword.value.trim();
-      const confirmPassword = signupConfirmPassword.value.trim();
-
-      if (!email || !password || !confirmPassword) {
-        alert("Please fill in all signup fields.");
-        return;
-      }
-      if (!validateEmail(email)) {
-        alert("Please enter a valid email.");
-        return;
-      }
-      if (password.length < 6) {
-        alert("Password should be at least 6 characters.");
-        return;
-      }
-      if (password !== confirmPassword) {
-        alert("Passwords do not match.");
-        return;
-      }
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          alert(`Account created! Welcome ${userCredential.user.email}`);
-          window.location.href = "profile-setup.html";
-        })
-        .catch((error) => {
-          alert("Error: " + error.message);
-        });
-    });
-
+    // Login
+    const loginOriginal = loginBtn.innerHTML;
     loginBtn.addEventListener("click", () => {
-      const email = loginEmail.value.trim();
+      const email    = loginEmail.value.trim();
       const password = loginPassword.value.trim();
 
-      if (!email || !password) {
-        alert("Please fill in both email and password.");
-        return;
-      }
-      if (!validateEmail(email)) {
-        alert("Please enter a valid email.");
-        return;
-      }
+      if (!email || !password) return showToast("Please fill in all fields.", 'error');
+      if (!validateEmail(email)) return showToast("Enter a valid email address.", 'error');
+
+      setLoading(loginBtn, true, loginOriginal);
 
       signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          alert(`Welcome back, ${userCredential.user.email}!`);
-          window.location.href = "dashboard.html";
+        .then((cred) => {
+          showToast(`✓ Welcome back, ${cred.user.email}!`, 'success');
+          setTimeout(() => window.location.href = "dashboard.html", 1000);
         })
-        .catch((error) => {
-          alert("Login failed: " + error.message);
+        .catch((err) => {
+          setLoading(loginBtn, false, loginOriginal);
+          showToast("Login failed: " + err.message, 'error');
         });
     });
+
+    // Signup
+    const signupOriginal = signupBtn.innerHTML;
+    signupBtn.addEventListener("click", () => {
+      const email    = signupEmail.value.trim();
+      const password = signupPassword.value.trim();
+      const confirm  = signupConfirmPassword.value.trim();
+
+      if (!email || !password || !confirm) return showToast("Please fill in all fields.", 'error');
+      if (!validateEmail(email))           return showToast("Enter a valid email address.", 'error');
+      if (password.length < 6)             return showToast("Password must be at least 6 characters.", 'error');
+      if (password !== confirm)            return showToast("Passwords do not match.", 'error');
+
+      setLoading(signupBtn, true, signupOriginal);
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((cred) => {
+          showToast(`✓ Account created! Welcome aboard.`, 'success');
+          setTimeout(() => window.location.href = "profile-setup.html", 1000);
+        })
+        .catch((err) => {
+          setLoading(signupBtn, false, signupOriginal);
+          showToast("Sign up failed: " + err.message, 'error');
+        });
+    });
+
+    // Enter key support
+    loginPassword.addEventListener("keydown", e => { if (e.key === "Enter") loginBtn.click(); });
+    signupConfirmPassword.addEventListener("keydown", e => { if (e.key === "Enter") signupBtn.click(); });
   </script>
 </body>
 </html>
