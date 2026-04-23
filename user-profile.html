@@ -3,98 +3,567 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User Profile</title>
+  <title>User Profile | NexLink</title>
+  <link rel="icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c26;
+      --surface3: #242432;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.13);
+      --accent: #7c5cfc;
+      --accent2: #fc5c7d;
+      --accent-glow: rgba(124,92,252,0.3);
+      --text-primary: #f0f0f8;
+      --text-secondary: #8888aa;
+      --text-muted: #55556a;
+      --radius: 18px;
+      --radius-sm: 12px;
+      --radius-xs: 8px;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      padding: 20px;
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 60px;
+      position: relative;
     }
-    .profile-card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 500px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+    /* Ambient */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 55% 35% at 20% 0%, rgba(124,92,252,0.11) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 30% at 80% 100%, rgba(252,92,125,0.07) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
     }
-    .profile-card h2 {
-      margin: 0 0 10px;
+
+    /* ── NAV ── */
+    nav {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
     }
-    .profile-card p {
-      margin: 4px 0;
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: -0.3px;
     }
-    .back-btn {
-      display: block;
-      margin: 20px auto 0;
-      text-align: center;
+
+    .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 10px var(--accent-glow);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.7; transform: scale(1.4); }
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
       padding: 8px 16px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn-back:hover {
+      background: var(--surface2);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    /* ── CARD ── */
+    .profile-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      overflow: hidden;
+      animation: fade-up 0.45s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero strip */
+    .card-hero {
+      height: 110px;
+      background: linear-gradient(135deg, rgba(124,92,252,0.25) 0%, rgba(252,92,125,0.18) 100%);
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Avatar */
+    .avatar-wrap {
+      position: absolute;
+      bottom: -34px;
+      left: 28px;
+    }
+
+    .avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: 3px solid var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 24px;
+      color: white;
+      letter-spacing: -1px;
+      box-shadow: 0 4px 20px rgba(124,92,252,0.4);
+    }
+
+    /* Card body */
+    .card-body {
+      padding: 48px 28px 28px;
+    }
+
+    .user-name {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .user-nickname {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 400;
+      margin-bottom: 14px;
+    }
+
+    .user-bio {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .info-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 12px 14px;
+      transition: border-color var(--transition);
+    }
+    .info-item:hover { border-color: var(--border-hover); }
+
+    .info-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .info-label svg {
+      width: 11px; height: 11px;
+      opacity: 0.6;
+    }
+
+    .info-value {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .info-value.muted { color: var(--text-muted); font-style: italic; }
+
+    /* Contact */
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      margin-bottom: 24px;
+    }
+    .contact-row svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
+    .contact-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+    .contact-value { font-size: 13px; color: var(--text-primary); margin-left: auto; }
+    .contact-value.muted { color: var(--text-muted); font-style: italic; }
+
+    /* Socials */
+    .socials-section {
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .socials-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .social-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .social-chip:hover {
+      background: rgba(124,92,252,0.1);
+      border-color: rgba(124,92,252,0.35);
+      color: var(--text-primary);
+    }
+    .social-chip svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    .no-socials {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Error / loading states */
+    .state-box {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 60px 28px;
+      text-align: center;
+      animation: fade-up 0.45s cubic-bezier(0.4,0,0.2,1) both;
+    }
+
+    .state-box svg { opacity: 0.3; margin-bottom: 16px; }
+    .state-box h3 {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .state-box p { font-size: 13px; color: var(--text-muted); }
+
+    /* Skeleton shimmer */
+    .skeleton-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: fade-up 0.45s cubic-bezier(0.4,0,0.2,1) both;
+    }
+
+    .skeleton-hero { height: 110px; background: var(--surface2); }
+    .skeleton-body { padding: 52px 28px 28px; }
+
+    .skel {
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      border-radius: 6px;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to   { background-position: -200% 0; }
+    }
+
+    .skel-avatar {
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      margin-bottom: 0;
+      border: 3px solid var(--surface);
+      position: absolute;
+      bottom: -34px;
+      left: 28px;
+    }
+
+    .skel-name  { height: 22px; width: 55%; margin-bottom: 10px; }
+    .skel-sub   { height: 14px; width: 30%; margin-bottom: 20px; }
+    .skel-bio1  { height: 13px; width: 100%; margin-bottom: 8px; }
+    .skel-bio2  { height: 13px; width: 80%; margin-bottom: 24px; }
+    .skel-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .skel-item  { height: 60px; border-radius: var(--radius-xs); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+    @media (max-width: 480px) {
+      .info-grid { grid-template-columns: 1fr; }
+      .card-body { padding: 48px 20px 24px; }
     }
   </style>
 </head>
 <body>
 
-<div class="profile-card" id="profileContainer">
-  Loading profile...
-</div>
-<button class="back-btn" onclick="history.back()">🔙 Back</button>
+  <!-- Nav -->
+  <nav>
+    <a class="nav-logo" href="dashboard.html">
+      <div class="logo-dot"></div>
+      NexLink
+    </a>
+    <button class="btn-back" onclick="history.back()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back
+    </button>
+  </nav>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <!-- Dynamic content injected here -->
+  <div id="root"></div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
-    authDomain: "friends-zone-c2fe8.firebaseapp.com",
-    projectId: "friends-zone-c2fe8",
-    storageBucket: "friends-zone-c2fe8.appspot.com",
-    messagingSenderId: "962940178101",
-    appId: "1:962940178101:web:330aa526d4e7b012dff8fc",
-    measurementId: "G-VPGKVYTKD1"
-  };
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
+      authDomain: "friends-zone-c2fe8.firebaseapp.com",
+      projectId: "friends-zone-c2fe8",
+      storageBucket: "friends-zone-c2fe8.appspot.com",
+      messagingSenderId: "962940178101",
+      appId: "1:962940178101:web:330aa526d4e7b012dff8fc",
+      measurementId: "G-VPGKVYTKD1"
+    };
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const uid = urlParams.get("uid");
-  const profileContainer = document.getElementById("profileContainer");
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
 
-  if (uid) {
+    const root = document.getElementById("root");
+
+    function getInitials(name) {
+      return (name || "?").trim().split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
+    }
+
+    function val(v) {
+      return v && v.trim() !== "" ? v.trim() : null;
+    }
+
+    function infoItem(icon, label, value) {
+      const display = val(value);
+      return `
+        <div class="info-item">
+          <div class="info-label">
+            ${icon}
+            ${label}
+          </div>
+          <div class="info-value ${display ? '' : 'muted'}">${display || "Not set"}</div>
+        </div>`;
+    }
+
+    function socialChip(href, iconSvg, label) {
+      if (!val(href)) return "";
+      return `
+        <a class="social-chip" href="${href}" target="_blank" rel="noopener noreferrer">
+          ${iconSvg}
+          ${label}
+        </a>`;
+    }
+
+    // Show skeleton
+    root.innerHTML = `
+      <div class="skeleton-card">
+        <div class="skeleton-hero" style="position:relative;">
+          <div class="skel skel-avatar"></div>
+        </div>
+        <div class="skeleton-body">
+          <div class="skel skel-name"></div>
+          <div class="skel skel-sub"></div>
+          <div class="skel skel-bio1"></div>
+          <div class="skel skel-bio2"></div>
+          <div class="skel-grid">
+            <div class="skel skel-item"></div>
+            <div class="skel skel-item"></div>
+            <div class="skel skel-item"></div>
+            <div class="skel skel-item"></div>
+          </div>
+        </div>
+      </div>`;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const uid = urlParams.get("uid");
+
+    if (!uid) {
+      root.innerHTML = `
+        <div class="state-box">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <h3>No user specified</h3>
+          <p>No UID was found in the URL parameters.</p>
+        </div>`;
+      return;
+    }
+
     (async () => {
       try {
-        const userRef = doc(db, "users", uid);
-        const docSnap = await getDoc(userRef);
+        const docSnap = await getDoc(doc(db, "users", uid));
 
-        if (docSnap.exists()) {
-          const user = docSnap.data();
-          profileContainer.innerHTML = `
-            <h2>${user.name || "No name"}</h2>
-            <p><b>Nickname:</b> ${user.nickname || "N/A"}</p>
-            <p><b>Bio:</b> ${user.bio || "No bio yet."}</p>
-            <p><b>Workplace:</b> ${user.workplace || "N/A"}</p>
-            <p><b>Region:</b> ${user.region || "N/A"}</p>
-            <p><b>Religion:</b> ${user.religion || "N/A"}</p>
-            <p><b>Relationship:</b> ${user.relationship || "N/A"}</p>
-            <p><b>Contact:</b> ${user.contact || "N/A"}</p>
-          `;
-        } else {
-          profileContainer.innerHTML = `<p style="color: red;">❌ User profile not found for this UID.</p>`;
+        if (!docSnap.exists()) {
+          root.innerHTML = `
+            <div class="state-box">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="18" y1="6" x2="22" y2="10"/><line x1="22" y1="6" x2="18" y2="10"/></svg>
+              <h3>Profile not found</h3>
+              <p>No user profile exists for this UID.</p>
+            </div>`;
+          return;
         }
+
+        const u = docSnap.data();
+        const socials = u.socials || {};
+
+        const socialIcons = {
+          facebook: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+          twitter:  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>`,
+          instagram:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>`,
+          linkedin: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>`,
+        };
+
+        const socialChips = [
+          socialChip(socials.facebook,  socialIcons.facebook,  "Facebook"),
+          socialChip(socials.twitter,   socialIcons.twitter,   "Twitter"),
+          socialChip(socials.instagram, socialIcons.instagram, "Instagram"),
+          socialChip(socials.linkedin,  socialIcons.linkedin,  "LinkedIn"),
+        ].filter(Boolean).join("");
+
+        document.title = `${u.name || "User"} | NexLink`;
+
+        root.innerHTML = `
+          <div class="profile-card">
+            <div class="card-hero">
+              <div class="avatar-wrap">
+                <div class="avatar">${getInitials(u.name)}</div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="user-name">${val(u.name) || "Unnamed User"}</div>
+              ${val(u.nickname) ? `<div class="user-nickname">@${u.nickname}</div>` : `<div style="margin-bottom:14px"></div>`}
+              <div class="user-bio">${val(u.bio) || '<span style="color:var(--text-muted);font-style:italic;">No bio yet.</span>'}</div>
+
+              <div class="info-grid">
+                ${infoItem(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`, "Workplace", u.workplace)}
+                ${infoItem(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`, "Region", u.region)}
+                ${infoItem(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>`, "Relationship", u.relationship)}
+                ${infoItem(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`, "Religion", u.religion)}
+              </div>
+
+              ${val(u.contact) ? `
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.28h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.7a16 16 0 0 0 7.39 7.39l.98-.98a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span class="contact-label">Contact</span>
+                <span class="contact-value">${u.contact}</span>
+              </div>` : ''}
+
+              ${socialChips ? `
+              <div class="socials-section">
+                <div class="section-label">Social Links</div>
+                <div class="socials-row">${socialChips}</div>
+              </div>` : ''}
+            </div>
+          </div>`;
+
       } catch (err) {
         console.error("Error loading profile:", err);
-        profileContainer.innerHTML = `<p style="color: red;">🚨 Error fetching profile. Check console for details.</p>`;
+        root.innerHTML = `
+          <div class="state-box">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <h3>Something went wrong</h3>
+            <p>Failed to load profile. Check the console for details.</p>
+          </div>`;
       }
     })();
-  } else {
-    profileContainer.innerHTML = `<p style="color: red;"⚠️ No UID found in URL.</p>`;
-  }
-</script>
-
+  </script>
 </body>
 </html>
