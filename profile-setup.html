@@ -4,6 +4,322 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Profile Setup | NexLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c26;
+      --surface3: #242432;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.14);
+      --accent: #7c5cfc;
+      --accent2: #fc5c7d;
+      --accent-glow: rgba(124,92,252,0.3);
+      --text-primary: #f0f0f8;
+      --text-secondary: #8888aa;
+      --text-muted: #55556a;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-xs: 7px;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 16px 60px;
+      position: relative;
+    }
+
+    /* Ambient */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 55% 35% at 15% 0%, rgba(124,92,252,0.11) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 30% at 85% 100%, rgba(252,92,125,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      animation: fade-up 0.5s cubic-bezier(0.4,0,0.2,1) both;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      margin-bottom: 4px;
+    }
+
+    .logo-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 10px var(--accent-glow);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.7; transform: scale(1.4); }
+    }
+
+    .page-header h2 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+    }
+
+    .page-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    /* Section label */
+    .section-label {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Form fields */
+    .field {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      letter-spacing: 0.2px;
+    }
+
+    label .req {
+      color: var(--accent2);
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 11px 14px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(124,92,252,0.5);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.08);
+    }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238888aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    select option {
+      background: var(--surface2);
+      color: var(--text-primary);
+    }
+
+    textarea { height: 90px; }
+
+    /* Two-col grid */
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Social links fieldset */
+    .socials-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .social-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 0 14px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .social-row:focus-within {
+      border-color: rgba(124,92,252,0.5);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.08);
+    }
+
+    .social-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.5;
+    }
+
+    .social-row input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 11px 0;
+      box-shadow: none;
+    }
+    .social-row input:focus {
+      border: none;
+      box-shadow: none;
+    }
+
+    /* Submit */
+    .btn-save {
+      width: 100%;
+      margin-top: 28px;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent) 0%, #a56cfc 50%, var(--accent2) 100%);
+      background-size: 200% 200%;
+      background-position: 0% 50%;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), background-position 0.4s;
+      box-shadow: 0 6px 28px rgba(124,92,252,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 36px rgba(124,92,252,0.5);
+      background-position: 100% 50%;
+    }
+    .btn-save:active { transform: translateY(0); }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface3);
+      border: 1px solid var(--border-hover);
+      color: var(--text-primary);
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font-body);
+      z-index: 9999;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.error { border-color: rgba(252,92,125,0.4); color: #ff6b8a; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+    @media (max-width: 480px) {
+      .container { padding: 28px 20px; }
+      .field-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -16,7 +332,7 @@
       projectId: "friends-zone-c2fe8",
       storageBucket: "friends-zone-c2fe8.appspot.com",
       messagingSenderId: "962940178101",
-      appId: "1:962940178101:web:330aa526dff8fc",
+      appId: "1:962940178101:web:330aa526d4e7b012dff8fc",
       measurementId: "G-VPGKVYTKD1"
     };
 
@@ -24,14 +340,26 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Toast helper
+    let toastTimer;
+    function showToast(msg, isError = false) {
+      clearTimeout(toastTimer);
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.toggle('error', isError);
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       let currentUserId = null;
       const form = document.getElementById("profileForm");
+      const saveBtn = document.getElementById("saveBtn");
 
       onAuthStateChanged(auth, async (user) => {
         if (!user) {
-          alert("You must be logged in.");
-          window.location.href = "login.html";
+          showToast("You must be logged in.", true);
+          setTimeout(() => window.location.href = "nexlink-auth.html", 1500);
           return;
         }
         currentUserId = user.uid;
@@ -40,10 +368,13 @@
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (!currentUserId) {
-          alert("User not authenticated!");
-          return;
-        }
+        if (!currentUserId) { showToast("User not authenticated!", true); return; }
+
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `
+          <svg style="animation:spin .7s linear infinite;width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-9-9"/></svg>
+          Saving…
+        `;
 
         try {
           const data = {
@@ -61,217 +392,157 @@
               instagram: form.instagram.value.trim(),
               linkedin: form.linkedin.value.trim(),
             },
-            photoURL: "", // No profile image
+            photoURL: "",
             updatedAt: new Date(),
           };
 
           if (!data.name) {
-            alert("Name is required");
+            showToast("Full name is required.", true);
+            resetBtn();
             return;
           }
 
           await setDoc(doc(db, "users", currentUserId), data, { merge: true });
-          alert("Profile saved successfully!");
-          window.location.href = "dashboard.html";
+          showToast("✓ Profile saved successfully!");
+          setTimeout(() => window.location.href = "dashboard.html", 1200);
 
         } catch (error) {
           console.error("Error saving profile:", error);
-          alert("Failed to save profile: " + error.message);
+          showToast("Failed to save: " + error.message, true);
+          resetBtn();
         }
       });
+
+      function resetBtn() {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `Save Profile <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>`;
+      }
 
       async function loadProfileData(uid) {
         try {
           const docSnap = await getDoc(doc(db, "users", uid));
           if (docSnap.exists()) {
             const d = docSnap.data();
-            form.name.value = d.name || "";
-            form.nickname.value = d.nickname || "";
-            form.bio.value = d.bio || "";
-            form.workplace.value = d.workplace || "";
+            form.name.value       = d.name || "";
+            form.nickname.value   = d.nickname || "";
+            form.bio.value        = d.bio || "";
+            form.workplace.value  = d.workplace || "";
             form.relationship.value = d.relationship || "Single";
-            form.region.value = d.region || "";
-            form.religion.value = d.religion || "";
-            form.contact.value = d.contact || "";
-            form.facebook.value = d.socials?.facebook || "";
-            form.twitter.value = d.socials?.twitter || "";
-            form.instagram.value = d.socials?.instagram || "";
-            form.linkedin.value = d.socials?.linkedin || "";
+            form.region.value     = d.region || "";
+            form.religion.value   = d.religion || "";
+            form.contact.value    = d.contact || "";
+            form.facebook.value   = d.socials?.facebook || "";
+            form.twitter.value    = d.socials?.twitter || "";
+            form.instagram.value  = d.socials?.instagram || "";
+            form.linkedin.value   = d.socials?.linkedin || "";
           }
         } catch (error) {
           console.error("Error loading profile:", error);
+          showToast("Failed to load profile.", true);
         }
       }
     });
   </script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: white;
-      color: #111;
-      margin: 0;
-      padding: 2rem 1rem;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
-    .container {
-      background: white;
-      border-radius: 12px;
-      padding: 2rem 2.5rem;
-      max-width: 450px;
-      width: 100%;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: #111;
-    }
-    form > div {
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      color: #222;
-    }
-    input[type="text"],
-    input[type="url"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 0.5rem 0.7rem;
-      border-radius: 8px;
-      border: 1.5px solid #ccc;
-      font-size: 1rem;
-      resize: vertical;
-      box-sizing: border-box;
-      color: #222;
-      background-color: white;
-      transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus,
-    input[type="url"]:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #42b72a;
-      outline: none;
-      box-shadow: 0 0 5px rgba(66, 183, 42, 0.5);
-    }
-    textarea {
-      height: 80px;
-    }
-    button {
-      width: 100%;
-      padding: 0.7rem;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #42b72a;
-      color: white;
-      cursor: pointer;
-      font-weight: 700;
-      margin-top: 1rem;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #379920;
-    }
-    select {
-      background-color: white;
-      color: #222;
-    }
-    fieldset {
-      border: 1.5px solid #ccc;
-      border-radius: 8px;
-      padding: 12px 14px;
-    }
-    legend {
-      color: #444;
-      font-weight: 600;
-    }
-    small {
-      color: #666;
-      font-size: 0.8rem;
-    }
-  </style>
 </head>
+
 <body>
+  <div id="toast"></div>
+
   <div class="container">
-    <h2>Setup Your Profile</h2>
+    <div class="page-header">
+      <a class="logo-row" href="dashboard.html">
+        <div class="logo-dot"></div>
+        NexLink
+      </a>
+      <h2>Setup Your Profile</h2>
+      <p>Tell your network a bit about yourself</p>
+    </div>
+
     <form id="profileForm">
-      <div>
-        <label for="name">Full Name *</label>
-        <input type="text" id="name" name="name" placeholder="Your full name" required />
+
+      <div class="section-label">Basic Info</div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="name">Full Name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" placeholder="Your full name" required />
+        </div>
+        <div class="field">
+          <label for="nickname">Nickname</label>
+          <input type="text" id="nickname" name="nickname" placeholder="Optional" />
+        </div>
       </div>
 
-      <div>
-        <label for="nickname">Nickname</label>
-        <input type="text" id="nickname" name="nickname" placeholder="Nickname (optional)" />
-      </div>
-
-      <div>
+      <div class="field">
         <label for="bio">Bio</label>
-        <textarea id="bio" name="bio" placeholder="Tell something about yourself"></textarea>
+        <textarea id="bio" name="bio" placeholder="Tell something about yourself…"></textarea>
       </div>
 
-      <div>
-        <label for="workplace">Workplace</label>
-        <input type="text" id="workplace" name="workplace" placeholder="Where do you work?" />
+      <div class="section-label">Details</div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="workplace">Workplace</label>
+          <input type="text" id="workplace" name="workplace" placeholder="Where you work" />
+        </div>
+        <div class="field">
+          <label for="region">Region</label>
+          <input type="text" id="region" name="region" placeholder="City or region" />
+        </div>
       </div>
 
-      <div>
-        <label for="relationship">Relationship Status</label>
-        <select id="relationship" name="relationship">
-          <option value="Single">Single</option>
-          <option value="In a relationship">In a relationship</option>
-          <option value="Married">Married</option>
-          <option value="Complicated">Complicated</option>
-        </select>
+      <div class="field-grid">
+        <div class="field">
+          <label for="relationship">Relationship Status</label>
+          <select id="relationship" name="relationship">
+            <option value="Single">Single</option>
+            <option value="In a relationship">In a relationship</option>
+            <option value="Married">Married</option>
+            <option value="Complicated">Complicated</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="religion">Religion</label>
+          <input type="text" id="religion" name="religion" placeholder="Optional" />
+        </div>
       </div>
 
-      <div>
-        <label for="region">Region</label>
-        <input type="text" id="region" name="region" placeholder="Your region or city" />
-      </div>
-
-      <div>
-        <label for="religion">Religion</label>
-        <input type="text" id="religion" name="religion" placeholder="Your religion (optional)" />
-      </div>
-
-      <div>
+      <div class="field">
         <label for="contact">Contact Info</label>
         <input type="text" id="contact" name="contact" placeholder="Phone or email" />
       </div>
 
-      <fieldset>
-        <legend>Social Media Links (Optional)</legend>
+      <div class="section-label">Social Links</div>
 
-        <div>
-          <label for="facebook">Facebook</label>
-          <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/yourprofile" />
+      <div class="socials-grid">
+        <div class="social-row">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <input type="url" id="facebook" name="facebook" placeholder="facebook.com/yourprofile" />
         </div>
-        <div>
-          <label for="twitter">Twitter</label>
-          <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/yourprofile" />
+        <div class="social-row">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+          <input type="url" id="twitter" name="twitter" placeholder="twitter.com/yourprofile" />
         </div>
-        <div>
-          <label for="instagram">Instagram</label>
-          <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/yourprofile" />
+        <div class="social-row">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+          <input type="url" id="instagram" name="instagram" placeholder="instagram.com/yourprofile" />
         </div>
-        <div>
-          <label for="linkedin">LinkedIn</label>
-          <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile" />
+        <div class="social-row">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          <input type="url" id="linkedin" name="linkedin" placeholder="linkedin.com/in/yourprofile" />
         </div>
-      </fieldset>
+      </div>
 
-      <button type="submit">Save Profile</button>
+      <button type="submit" class="btn-save" id="saveBtn">
+        Save Profile
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      </button>
+
     </form>
   </div>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </body>
 </html>
