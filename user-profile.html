@@ -10,366 +10,131 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0a0a0f;
-      --surface: #13131a;
-      --surface2: #1c1c26;
-      --surface3: #242432;
-      --border: rgba(255,255,255,0.07);
-      --border-hover: rgba(255,255,255,0.13);
-      --accent: #7c5cfc;
-      --accent2: #fc5c7d;
-      --accent-glow: rgba(124,92,252,0.3);
-      --text-primary: #f0f0f8;
-      --text-secondary: #8888aa;
-      --text-muted: #55556a;
-      --radius: 18px;
-      --radius-sm: 12px;
-      --radius-xs: 8px;
-      --font-display: 'Syne', sans-serif;
-      --font-body: 'DM Sans', sans-serif;
+      --bg: #0a0a0f; --surface: #13131a; --surface2: #1c1c26; --surface3: #242432;
+      --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.13);
+      --accent: #7c5cfc; --accent2: #fc5c7d; --accent-glow: rgba(124,92,252,0.3);
+      --text-primary: #f0f0f8; --text-secondary: #8888aa; --text-muted: #55556a;
+      --radius: 18px; --radius-sm: 12px; --radius-xs: 8px;
+      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
       --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--text-primary);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 16px 60px;
-      position: relative;
+      font-family: var(--font-body); background: var(--bg); color: var(--text-primary);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; padding: 40px 16px 60px; position: relative;
     }
-
-    /* Ambient */
     body::before {
-      content: '';
-      position: fixed; inset: 0;
+      content: ''; position: fixed; inset: 0;
       background:
         radial-gradient(ellipse 55% 35% at 20% 0%, rgba(124,92,252,0.11) 0%, transparent 70%),
         radial-gradient(ellipse 45% 30% at 80% 100%, rgba(252,92,125,0.07) 0%, transparent 70%);
       pointer-events: none; z-index: 0;
     }
-
-    /* ── NAV ── */
     nav {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 560px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
+      position: relative; z-index: 1; width: 100%; max-width: 560px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;
     }
-
     .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-display);
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--text-primary);
-      text-decoration: none;
-      letter-spacing: -0.3px;
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-display); font-size: 17px; font-weight: 800;
+      color: var(--text-primary); text-decoration: none; letter-spacing: -0.3px;
     }
-
     .logo-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
+      width: 8px; height: 8px; border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       box-shadow: 0 0 10px var(--accent-glow);
       animation: pulse-dot 2.5s ease-in-out infinite;
     }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.7; transform: scale(1.4); }
-    }
-
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.4); } }
     .btn-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      color: var(--text-secondary);
-      font-family: var(--font-body);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--transition);
-      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xs);
+      color: var(--text-secondary); font-family: var(--font-body); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: var(--transition); text-decoration: none;
     }
-    .btn-back:hover {
-      background: var(--surface2);
-      border-color: var(--border-hover);
-      color: var(--text-primary);
-    }
+    .btn-back:hover { background: var(--surface2); border-color: var(--border-hover); color: var(--text-primary); }
 
-    /* ── CARD ── */
+    /* ── PROFILE CARD ── */
     .profile-card {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 560px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
-      overflow: hidden;
+      position: relative; z-index: 1; width: 100%; max-width: 560px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4); overflow: hidden;
       animation: fade-up 0.45s cubic-bezier(0.4,0,0.2,1) both;
     }
-    @keyframes fade-up {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Hero strip */
     .card-hero {
       height: 110px;
       background: linear-gradient(135deg, rgba(124,92,252,0.25) 0%, rgba(252,92,125,0.18) 100%);
-      position: relative;
-      border-bottom: 1px solid var(--border);
+      position: relative; border-bottom: 1px solid var(--border);
     }
-
-    /* Avatar */
-    .avatar-wrap {
-      position: absolute;
-      bottom: -34px;
-      left: 28px;
-    }
-
+    .avatar-wrap { position: absolute; bottom: -34px; left: 28px; }
     .avatar {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
+      width: 68px; height: 68px; border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       border: 3px solid var(--surface);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 24px;
-      color: white;
-      letter-spacing: -1px;
-      box-shadow: 0 4px 20px rgba(124,92,252,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-weight: 800; font-size: 24px; color: white;
+      letter-spacing: -1px; box-shadow: 0 4px 20px rgba(124,92,252,0.4);
     }
-
-    /* Card body */
-    .card-body {
-      padding: 48px 28px 28px;
-    }
-
-    .user-name {
-      font-family: var(--font-display);
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 4px;
-    }
-
-    .user-nickname {
-      font-size: 13px;
-      color: var(--accent);
-      font-weight: 400;
-      margin-bottom: 14px;
-    }
-
-    .user-bio {
-      font-size: 14px;
-      font-weight: 300;
-      color: var(--text-secondary);
-      line-height: 1.65;
-      margin-bottom: 24px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    /* Info grid */
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .info-item {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      padding: 12px 14px;
-      transition: border-color var(--transition);
-    }
+    .card-body { padding: 48px 28px 28px; }
+    .user-name { font-family: var(--font-display); font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .user-nickname { font-size: 13px; color: var(--accent); font-weight: 400; margin-bottom: 14px; }
+    .user-bio { font-size: 14px; font-weight: 300; color: var(--text-secondary); line-height: 1.65; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .info-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 12px 14px; transition: border-color var(--transition); }
     .info-item:hover { border-color: var(--border-hover); }
-
-    .info-label {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .info-label svg {
-      width: 11px; height: 11px;
-      opacity: 0.6;
-    }
-
-    .info-value {
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--text-primary);
-      word-break: break-word;
-    }
-
+    .info-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+    .info-label svg { width: 11px; height: 11px; opacity: 0.6; }
+    .info-value { font-size: 13px; font-weight: 400; color: var(--text-primary); word-break: break-word; }
     .info-value.muted { color: var(--text-muted); font-style: italic; }
-
-    /* Contact */
-    .contact-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      margin-bottom: 24px;
-    }
+    .contact-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-xs); margin-bottom: 24px; }
     .contact-row svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
     .contact-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
     .contact-value { font-size: 13px; color: var(--text-primary); margin-left: auto; }
-    .contact-value.muted { color: var(--text-muted); font-style: italic; }
-
-    /* Socials */
-    .socials-section {
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-
-    .section-label {
-      font-family: var(--font-display);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .socials-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .social-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 14px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-    .social-chip:hover {
-      background: rgba(124,92,252,0.1);
-      border-color: rgba(124,92,252,0.35);
-      color: var(--text-primary);
-    }
+    .socials-section { padding-top: 20px; border-top: 1px solid var(--border); }
+    .section-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .socials-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .social-chip { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--text-secondary); text-decoration: none; transition: var(--transition); }
+    .social-chip:hover { background: rgba(124,92,252,0.1); border-color: rgba(124,92,252,0.35); color: var(--text-primary); }
     .social-chip svg { width: 13px; height: 13px; flex-shrink: 0; }
 
-    .no-socials {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-
-    /* Error / loading states */
+    /* ── STATE BOXES ── */
     .state-box {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 560px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 60px 28px;
-      text-align: center;
+      position: relative; z-index: 1; width: 100%; max-width: 560px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 60px 28px; text-align: center;
       animation: fade-up 0.45s cubic-bezier(0.4,0,0.2,1) both;
     }
-
     .state-box svg { opacity: 0.3; margin-bottom: 16px; }
-    .state-box h3 {
-      font-family: var(--font-display);
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-    }
-    .state-box p { font-size: 13px; color: var(--text-muted); }
+    .state-box h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; }
+    .state-box p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-    /* Skeleton shimmer */
+    /* ── DEBUG BOX (shows what went wrong) ── */
+    .debug-box {
+      position: relative; z-index: 1; width: 100%; max-width: 560px;
+      margin-top: 16px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 16px 18px; font-family: monospace; font-size: 11px; line-height: 1.8;
+    }
+    .debug-box .d-ok   { color: #4ade80; }
+    .debug-box .d-err  { color: #f87171; }
+    .debug-box .d-info { color: #93c5fd; }
+    .debug-box .d-warn { color: #fbbf24; }
+
+    /* ── SKELETON ── */
     .skeleton-card {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 560px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
+      position: relative; z-index: 1; width: 100%; max-width: 560px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
       animation: fade-up 0.45s cubic-bezier(0.4,0,0.2,1) both;
     }
-
-    .skeleton-hero { height: 110px; background: var(--surface2); }
+    .skeleton-hero { height: 110px; background: var(--surface2); position: relative; }
     .skeleton-body { padding: 52px 28px 28px; }
-
-    .skel {
-      background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
-      background-size: 200% 100%;
-      border-radius: 6px;
-      animation: shimmer 1.5s infinite;
-    }
-    @keyframes shimmer {
-      from { background-position: 200% 0; }
-      to   { background-position: -200% 0; }
-    }
-
-    .skel-avatar {
-      width: 68px; height: 68px;
-      border-radius: 50%;
-      margin-bottom: 0;
-      border: 3px solid var(--surface);
-      position: absolute;
-      bottom: -34px;
-      left: 28px;
-    }
-
+    .skel { background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%); background-size: 200% 100%; border-radius: 6px; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+    .skel-avatar { width: 68px; height: 68px; border-radius: 50%; border: 3px solid var(--surface); position: absolute; bottom: -34px; left: 28px; }
     .skel-name  { height: 22px; width: 55%; margin-bottom: 10px; }
     .skel-sub   { height: 14px; width: 30%; margin-bottom: 20px; }
     .skel-bio1  { height: 13px; width: 100%; margin-bottom: 8px; }
@@ -377,11 +142,9 @@
     .skel-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .skel-item  { height: 60px; border-radius: var(--radius-xs); }
 
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
-
     @media (max-width: 480px) {
       .info-grid { grid-template-columns: 1fr; }
       .card-body { padding: 48px 20px 24px; }
@@ -390,7 +153,6 @@
 </head>
 <body>
 
-  <!-- Nav -->
   <nav>
     <a class="nav-logo" href="dashboard.html">
       <div class="logo-dot"></div>
@@ -402,12 +164,13 @@
     </button>
   </nav>
 
-  <!-- Dynamic content injected here -->
   <div id="root"></div>
+  <div id="debugBox" class="debug-box" style="display:none;"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
@@ -419,44 +182,49 @@
       measurementId: "G-VPGKVYTKD1"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+    const auth = getAuth(app);
 
-    const root = document.getElementById("root");
+    const root     = document.getElementById("root");
+    const debugBox = document.getElementById("debugBox");
+
+    // ── Debug logger ──
+    function dbg(msg, type = 'info') {
+      debugBox.style.display = 'block';
+      const line = document.createElement('div');
+      line.className = `d-${type}`;
+      line.textContent = `▸ ${msg}`;
+      debugBox.appendChild(line);
+      console.log(`[UserProfile] ${msg}`);
+    }
 
     function getInitials(name) {
       return (name || "?").trim().split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
     }
 
     function val(v) {
-      return v && v.trim() !== "" ? v.trim() : null;
+      return (v && String(v).trim() !== "") ? String(v).trim() : null;
     }
 
     function infoItem(icon, label, value) {
       const display = val(value);
       return `
         <div class="info-item">
-          <div class="info-label">
-            ${icon}
-            ${label}
-          </div>
+          <div class="info-label">${icon}${label}</div>
           <div class="info-value ${display ? '' : 'muted'}">${display || "Not set"}</div>
         </div>`;
     }
 
     function socialChip(href, iconSvg, label) {
       if (!val(href)) return "";
-      return `
-        <a class="social-chip" href="${href}" target="_blank" rel="noopener noreferrer">
-          ${iconSvg}
-          ${label}
-        </a>`;
+      return `<a class="social-chip" href="${href}" target="_blank" rel="noopener noreferrer">${iconSvg}${label}</a>`;
     }
 
-    // Show skeleton
+    // Show skeleton immediately
     root.innerHTML = `
       <div class="skeleton-card">
-        <div class="skeleton-hero" style="position:relative;">
+        <div class="skeleton-hero">
           <div class="skel skel-avatar"></div>
         </div>
         <div class="skeleton-body">
@@ -473,36 +241,59 @@
         </div>
       </div>`;
 
+    // ── Step 1: Check UID in URL ──
     const urlParams = new URLSearchParams(window.location.search);
     const uid = urlParams.get("uid");
+
+    dbg(`Page URL: ${window.location.href}`, 'info');
+    dbg(`UID from URL: ${uid || "MISSING"}`, uid ? 'ok' : 'err');
 
     if (!uid) {
       root.innerHTML = `
         <div class="state-box">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <h3>No user specified</h3>
-          <p>No UID was found in the URL parameters.</p>
+          <h3>No user ID in URL</h3>
+          <p>The link is missing a <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:12px;">?uid=...</code> parameter.<br><br>Make sure the author link in the feed passes the user's UID correctly.</p>
         </div>`;
       return;
     }
 
-    (async () => {
+    // ── Step 2: Wait for auth then fetch profile ──
+    // We wait for auth state because Firestore rules require the reader to be logged in.
+    onAuthStateChanged(auth, async (currentUser) => {
+      dbg(`Auth state: ${currentUser ? 'logged in as ' + currentUser.uid : 'NOT logged in'}`, currentUser ? 'ok' : 'warn');
+
+      if (!currentUser) {
+        dbg('No auth — attempting unauthenticated read (rules allow read: true for users)', 'warn');
+      }
+
       try {
+        dbg(`Fetching Firestore doc: users/${uid}`, 'info');
         const docSnap = await getDoc(doc(db, "users", uid));
 
+        dbg(`Document exists: ${docSnap.exists()}`, docSnap.exists() ? 'ok' : 'err');
+
         if (!docSnap.exists()) {
+          // Extra hint: maybe profile was never set up
           root.innerHTML = `
             <div class="state-box">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="18" y1="6" x2="22" y2="10"/><line x1="22" y1="6" x2="18" y2="10"/></svg>
-              <h3>Profile not found</h3>
-              <p>No user profile exists for this UID.</p>
+              <h3>Profile not set up</h3>
+              <p>This user (UID: <code style="background:var(--surface2);padding:2px 5px;border-radius:4px;font-size:11px;">${uid}</code>) hasn't filled in their profile yet.<br><br>They need to visit Profile Setup and save their information first.</p>
             </div>`;
+          dbg(`No document found at users/${uid} — user may not have completed profile setup`, 'warn');
           return;
         }
 
         const u = docSnap.data();
-        const socials = u.socials || {};
+        dbg(`Profile loaded — name: "${u.name || 'not set'}", fields: ${Object.keys(u).join(', ')}`, 'ok');
 
+        // Log each field value for easy debugging
+        ['name','nickname','bio','workplace','region','relationship','religion','contact'].forEach(k => {
+          dbg(`  ${k}: ${u[k] ? '"' + u[k] + '"' : '(empty)'}`, u[k] ? 'ok' : 'warn');
+        });
+
+        const socials = u.socials || {};
         const socialIcons = {
           facebook: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
           twitter:  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>`,
@@ -526,10 +317,11 @@
                 <div class="avatar">${getInitials(u.name)}</div>
               </div>
             </div>
-
             <div class="card-body">
               <div class="user-name">${val(u.name) || "Unnamed User"}</div>
-              ${val(u.nickname) ? `<div class="user-nickname">@${u.nickname}</div>` : `<div style="margin-bottom:14px"></div>`}
+              ${val(u.nickname)
+                ? `<div class="user-nickname">@${u.nickname}</div>`
+                : `<div style="margin-bottom:14px"></div>`}
               <div class="user-bio">${val(u.bio) || '<span style="color:var(--text-muted);font-style:italic;">No bio yet.</span>'}</div>
 
               <div class="info-grid">
@@ -555,15 +347,22 @@
           </div>`;
 
       } catch (err) {
-        console.error("Error loading profile:", err);
+        dbg(`Firestore error: ${err.code} — ${err.message}`, 'err');
+        console.error("Profile load error:", err);
+
+        let hint = '';
+        if (err.code === 'permission-denied') {
+          hint = `<br><br>Your Firestore rules are blocking this read. Make sure <code style="background:var(--surface2);padding:2px 5px;border-radius:4px;font-size:11px;">match /users/{userId}</code> has <code style="background:var(--surface2);padding:2px 5px;border-radius:4px;font-size:11px;">allow read: if true;</code> or at minimum <code style="background:var(--surface2);padding:2px 5px;border-radius:4px;font-size:11px;">if request.auth != null;</code>`;
+        }
+
         root.innerHTML = `
           <div class="state-box">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <h3>Something went wrong</h3>
-            <p>Failed to load profile. Check the console for details.</p>
+            <h3>Failed to load profile</h3>
+            <p>Error: <strong>${err.code || err.message}</strong>${hint}</p>
           </div>`;
       }
-    })();
+    });
   </script>
 </body>
 </html>
