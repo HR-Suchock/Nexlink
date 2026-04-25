@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notifications | NexLink</title>
+  <link rel="icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #13131a; --surface2: #1c1c26; --surface3: #242432;
+      --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.13);
+      --accent: #7c5cfc; --accent2: #fc5c7d; --accent-glow: rgba(124,92,252,0.3);
+      --text-primary: #f0f0f8; --text-secondary: #8888aa; --text-muted: #55556a;
+      --success: #22c55e; --radius: 16px; --radius-sm: 12px; --radius-xs: 8px;
+      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body); background: var(--bg); color: var(--text-primary);
+      min-height: 100vh; padding-top: 72px; padding-bottom: 60px; position: relative;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 55% 35% at 20% 0%, rgba(124,92,252,0.1) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 30% at 80% 100%, rgba(252,92,125,0.07) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; height: 64px;
+      background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; z-index: 1000;
+    }
+    .header-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--font-display); font-size: 20px; font-weight: 800;
+      letter-spacing: -0.5px; color: var(--text-primary); text-decoration: none;
+    }
+    .logo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 10px var(--accent-glow);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.7; transform: scale(1.4); }
+    }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: var(--radius-xs);
+      font-family: var(--font-body); font-size: 13px; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--border);
+      background: transparent; color: var(--text-secondary);
+      transition: var(--transition); text-decoration: none;
+    }
+    .btn-back:hover { background: var(--surface2); border-color: var(--border-hover); color: var(--text-primary); }
+
+    /* ── MAIN ── */
+    main { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 32px 16px 0; }
+
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+
+    .header-actions-row { display: flex; align-items: center; gap: 8px; }
+
+    .mark-all-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-xs);
+      color: var(--text-secondary); font-family: var(--font-body); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: var(--transition);
+    }
+    .mark-all-btn:hover { background: var(--surface3); color: var(--text-primary); border-color: var(--border-hover); }
+
+    .delete-all-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
+      background: rgba(252,92,125,0.07);
+      border: 1px solid rgba(252,92,125,0.18);
+      border-radius: var(--radius-xs);
+      color: #ff8fa3;
+      font-family: var(--font-body); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: var(--transition);
+    }
+    .delete-all-btn:hover {
+      background: rgba(252,92,125,0.16);
+      border-color: rgba(252,92,125,0.4);
+      color: var(--accent2);
+    }
+
+    /* ── FILTER TABS ── */
+    .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab {
+      padding: 7px 16px; border-radius: 999px; font-size: 13px; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); transition: var(--transition); font-family: var(--font-body);
+    }
+    .tab.active { background: rgba(124,92,252,0.15); border-color: rgba(124,92,252,0.4); color: var(--accent); }
+    .tab:hover:not(.active) { background: var(--surface2); color: var(--text-secondary); }
+
+    /* ── NOTIFICATION ITEMS ── */
+    #notifList { display: flex; flex-direction: column; gap: 8px; }
+
+    .notif-item {
+      display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      transition: border-color var(--transition), background var(--transition), transform var(--transition);
+      animation: notif-in 0.3s cubic-bezier(0.4,0,0.2,1) both;
+      position: relative; overflow: hidden;
+    }
+    @keyframes notif-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .notif-item.unread { background: rgba(124,92,252,0.05); border-color: rgba(124,92,252,0.2); }
+    .notif-item.unread::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2));
+      border-radius: 0 2px 2px 0;
+    }
+    .notif-item:hover { border-color: var(--border-hover); background: var(--surface2); }
+
+    /* Slide-out delete animation */
+    .notif-item.deleting {
+      animation: slide-out 0.28s cubic-bezier(0.4,0,1,1) forwards !important;
+      pointer-events: none;
+    }
+    @keyframes slide-out {
+      0%   { opacity: 1; transform: translateX(0);    max-height: 120px; padding: 16px 18px; margin-bottom: 0; }
+      60%  { opacity: 0; transform: translateX(55px); max-height: 120px; }
+      100% { opacity: 0; transform: translateX(55px); max-height: 0; padding: 0; border-width: 0; }
+    }
+
+    /* Clickable main area */
+    .notif-clickable {
+      display: flex; align-items: center; gap: 14px;
+      flex: 1; min-width: 0; cursor: pointer;
+    }
+
+    .notif-icon {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .notif-icon.like    { background: rgba(252,92,125,0.12); color: var(--accent2); }
+    .notif-icon.comment { background: rgba(124,92,252,0.12); color: var(--accent); }
+    .notif-icon.reply   { background: rgba(34,197,94,0.1);   color: var(--success); }
+
+    .notif-body { flex: 1; min-width: 0; }
+    .notif-text { font-size: 13px; font-weight: 400; color: var(--text-secondary); line-height: 1.5; margin-bottom: 4px; }
+    .notif-text strong { color: var(--text-primary); font-weight: 600; }
+    .notif-preview { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; font-style: italic; }
+    .notif-time { font-size: 11px; color: var(--text-muted); }
+
+    .unread-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+      flex-shrink: 0; box-shadow: 0 0 6px var(--accent-glow);
+    }
+
+    /* ── DELETE BUTTON (per notif) ── */
+    .notif-del-btn {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: var(--radius-xs);
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+      opacity: 0;
+    }
+    .notif-item:hover .notif-del-btn { opacity: 1; }
+    .notif-del-btn:hover {
+      background: rgba(252,92,125,0.12);
+      border-color: rgba(252,92,125,0.25);
+      color: var(--accent2);
+    }
+
+    /* ── CONFIRM MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: fade-in 0.15s ease both;
+    }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius);
+      padding: 28px 28px 24px;
+      max-width: 360px;
+      width: 100%;
+      animation: modal-in 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes modal-in { from { opacity: 0; transform: scale(0.92) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-icon {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(252,92,125,0.1);
+      border: 1px solid rgba(252,92,125,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent2); margin-bottom: 16px;
+    }
+    .modal-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+    .modal-sub { font-size: 13px; font-weight: 300; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .modal-cancel {
+      padding: 9px 18px; border-radius: var(--radius-xs);
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text-secondary); font-family: var(--font-body);
+      font-size: 13px; font-weight: 500; cursor: pointer; transition: var(--transition);
+    }
+    .modal-cancel:hover { background: var(--surface3); color: var(--text-primary); }
+    .modal-confirm {
+      padding: 9px 18px; border-radius: var(--radius-xs);
+      background: rgba(252,92,125,0.12);
+      border: 1px solid rgba(252,92,125,0.3);
+      color: var(--accent2); font-family: var(--font-display);
+      font-size: 13px; font-weight: 700; cursor: pointer; transition: var(--transition);
+    }
+    .modal-confirm:hover {
+      background: rgba(252,92,125,0.22);
+      border-color: rgba(252,92,125,0.5);
+    }
+
+    /* ── SKELETON ── */
+    .skel-notif { display: flex; gap: 14px; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); align-items: center; }
+    .skel { background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+    .skel-circle { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; }
+    .skel-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .skel-line { height: 12px; }
+    .skel-line.short { width: 40%; }
+
+    /* ── EMPTY / ERROR ── */
+    .empty-state { text-align: center; padding: 70px 20px; color: var(--text-muted); }
+    .empty-state svg { opacity: 0.25; margin-bottom: 16px; display: block; margin-left: auto; margin-right: auto; }
+    .empty-state h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; }
+    .empty-state p { font-size: 13px; }
+    .error-box { background: rgba(252,92,125,0.07); border: 1px solid rgba(252,92,125,0.2); border-radius: var(--radius-sm); padding: 20px 24px; font-size: 13px; color: #ff8fa3; line-height: 1.7; }
+    .error-box strong { display: block; margin-bottom: 8px; font-size: 14px; }
+    .error-box code { background: rgba(255,255,255,0.07); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface3); border: 1px solid var(--border-hover);
+      color: var(--text-primary); padding: 10px 20px;
+      border-radius: var(--radius-sm); font-size: 13px;
+      font-family: var(--font-body); z-index: 9999;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+      opacity: 0; pointer-events: none; white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* Debug log */
+    #debugLog { margin-top: 24px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; font-size: 11px; font-family: monospace; line-height: 1.8; display: none; }
+    #debugLog.show { display: block; }
+    .log-ok   { color: #4ade80; }
+    .log-err  { color: #f87171; }
+    .log-info { color: #93c5fd; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<header>
+  <a class="header-logo" href="dashboard.html">
+    <div class="logo-dot"></div>
+    NexLink
+  </a>
+  <a class="btn-back" href="dashboard.html">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Feed
+  </a>
+</header>
+
+<main>
+  <div class="page-header">
+    <h1 class="page-title">Notifications</h1>
+    <div class="header-actions-row">
+      <button class="mark-all-btn" id="markAllBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Mark all read
+      </button>
+      <button class="delete-all-btn" id="deleteAllBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Delete all
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-tabs">
+    <button class="tab active" data-filter="all">All</button>
+    <button class="tab" data-filter="unread">Unread</button>
+    <button class="tab" data-filter="like">Likes</button>
+    <button class="tab" data-filter="comment">Comments</button>
+    <button class="tab" data-filter="reply">Replies</button>
+  </div>
+
+  <div id="notifList"></div>
+  <div id="debugLog"></div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, query, where,
+    onSnapshot, updateDoc, deleteDoc, doc, writeBatch
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1Lx114VTqRNU2sM0rfEqwLSuZyoSefqs",
+    authDomain: "friends-zone-c2fe8.firebaseapp.com",
+    projectId: "friends-zone-c2fe8",
+    storageBucket: "friends-zone-c2fe8.appspot.com",
+    messagingSenderId: "962940178101",
+    appId: "1:962940178101:web:330aa526d4e7b012dff8fc",
+    measurementId: "G-VPGKVYTKD1"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+
+  const notifList    = document.getElementById('notifList');
+  const markAllBtn   = document.getElementById('markAllBtn');
+  const deleteAllBtn = document.getElementById('deleteAllBtn');
+  const debugLog     = document.getElementById('debugLog');
+  const toastEl      = document.getElementById('toast');
+  const tabs         = document.querySelectorAll('.tab');
+
+  let currentUser  = null;
+  let allNotifs    = [];
+  let activeFilter = 'all';
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(msg) {
+    clearTimeout(toastTimer);
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+  }
+
+  // ── Debug log ──
+  function log(msg, type = 'info') {
+    debugLog.classList.add('show');
+    const line = document.createElement('div');
+    line.className = `log-${type}`;
+    line.textContent = `▸ ${msg}`;
+    debugLog.appendChild(line);
+    console.log(`[NexLink Notif] ${msg}`);
+  }
+
+  // ── Confirm modal ──
+  function showConfirm({ title, sub, confirmText = 'Delete', onConfirm }) {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal">
+        <div class="modal-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+        </div>
+        <div class="modal-title">${title}</div>
+        <div class="modal-sub">${sub}</div>
+        <div class="modal-actions">
+          <button class="modal-cancel">Cancel</button>
+          <button class="modal-confirm">${confirmText}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.modal-cancel').addEventListener('click', () => overlay.remove());
+    overlay.querySelector('.modal-confirm').addEventListener('click', () => {
+      overlay.remove();
+      onConfirm();
+    });
+    // Click backdrop to cancel
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+  }
+
+  // ── Skeletons ──
+  function showSkeletons() {
+    notifList.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+      const sk = document.createElement('div');
+      sk.className = 'skel-notif';
+      sk.innerHTML = `<div class="skel skel-circle"></div><div class="skel-lines"><div class="skel skel-line"></div><div class="skel skel-line short"></div></div>`;
+      notifList.appendChild(sk);
+    }
+  }
+  showSkeletons();
+
+  function timeAgo(ts) {
+    if (!ts) return '';
+    const diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60)    return `${diff}s ago`;
+    if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  const typeConfig = {
+    like: {
+      icon: `<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+      label: 'liked your post'
+    },
+    comment: {
+      icon: `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+      label: 'commented on your post'
+    },
+    reply: {
+      icon: `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`,
+      label: 'replied to your comment'
+    }
+  };
+
+  // ── Delete single notification ──
+  async function deleteNotif(id, itemEl) {
+    // Animate out first, then delete from Firestore
+    itemEl.classList.add('deleting');
+    await new Promise(r => setTimeout(r, 260)); // wait for animation
+    try {
+      await deleteDoc(doc(db, 'notifications', id));
+      showToast('Notification deleted');
+    } catch (e) {
+      log('Delete error: ' + e.message, 'err');
+      itemEl.classList.remove('deleting'); // restore if failed
+    }
+  }
+
+  // ── Render ──
+  function renderNotifs() {
+    let filtered = [...allNotifs];
+    if (activeFilter === 'unread') filtered = filtered.filter(n => !n.read);
+    else if (activeFilter !== 'all') filtered = filtered.filter(n => n.type === activeFilter);
+
+    // Sort newest first — client-side, no composite index needed
+    filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    if (filtered.length === 0) {
+      notifList.innerHTML = `
+        <div class="empty-state">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <h3>${activeFilter === 'unread' ? 'All caught up!' : 'No notifications yet'}</h3>
+          <p>${activeFilter === 'unread'
+            ? 'No unread notifications right now.'
+            : "When someone likes, comments, or replies on your posts, it'll show here."}</p>
+        </div>`;
+      return;
+    }
+
+    notifList.innerHTML = '';
+    filtered.forEach((n, idx) => {
+      const cfg = typeConfig[n.type] || typeConfig.comment;
+      const div = document.createElement('div');
+      div.className = `notif-item ${n.read ? '' : 'unread'}`;
+      div.style.animationDelay = `${idx * 0.04}s`;
+
+      div.innerHTML = `
+        <div class="notif-clickable">
+          <div class="notif-icon ${n.type || 'comment'}">${cfg.icon}</div>
+          <div class="notif-body">
+            <div class="notif-text"><strong>${n.fromName || 'Someone'}</strong> ${cfg.label}</div>
+            ${n.preview ? `<div class="notif-preview">"${n.preview}"</div>` : ''}
+            <div class="notif-time">${timeAgo(n.timestamp)}</div>
+          </div>
+          ${!n.read ? '<div class="unread-dot"></div>' : ''}
+        </div>
+        <button class="notif-del-btn" title="Delete notification" aria-label="Delete notification">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+        </button>
+      `;
+
+      // Click main area — mark read + navigate
+      div.querySelector('.notif-clickable').addEventListener('click', async () => {
+        if (!n.read) {
+          try { await updateDoc(doc(db, 'notifications', n.id), { read: true }); }
+          catch (e) { log('Mark read error: ' + e.message, 'err'); }
+        }
+        if (n.postId) window.location.href = `dashboard.html#post-${n.postId}`;
+      });
+
+      // Click delete button — animate out then delete
+      div.querySelector('.notif-del-btn').addEventListener('click', (e) => {
+        e.stopPropagation(); // don't trigger the nav click
+        deleteNotif(n.id, div);
+      });
+
+      notifList.appendChild(div);
+    });
+  }
+
+  // ── Auth ──
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      log('Not authenticated, redirecting...', 'err');
+      window.location.href = 'nexlink-auth.html';
+      return;
+    }
+    currentUser = user;
+    log(`Auth OK — UID: ${user.uid}`, 'ok');
+
+    // Only filter by toUserId — NO orderBy (avoids composite index requirement)
+    const q = query(
+      collection(db, 'notifications'),
+      where('toUserId', '==', user.uid)
+    );
+
+    log('Listening for notifications...', 'info');
+
+    onSnapshot(q,
+      (snap) => {
+        log(`Got ${snap.size} notification(s) from Firestore`, snap.size > 0 ? 'ok' : 'info');
+        allNotifs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderNotifs();
+      },
+      (err) => {
+        log(`Firestore error: ${err.code} — ${err.message}`, 'err');
+        let hint = '';
+        if (err.code === 'permission-denied') {
+          hint = `<br><br>👉 <strong>Fix:</strong> Update Firestore rules to allow read/write on <code>/notifications/{id}</code> for authenticated users.`;
+        } else if (err.code === 'failed-precondition') {
+          hint = `<br><br>👉 <strong>Fix:</strong> Open browser console (F12) — Firebase printed a direct link to create the missing index. Click it.`;
+        }
+        notifList.innerHTML = `
+          <div class="error-box">
+            <strong>❌ Notifications failed to load</strong>
+            Error code: <code>${err.code}</code><br>
+            ${err.message}${hint}
+          </div>`;
+      }
+    );
+  });
+
+  // ── Filter tabs ──
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeFilter = tab.dataset.filter;
+      renderNotifs();
+    });
+  });
+
+  // ── Mark all read ──
+  markAllBtn.addEventListener('click', async () => {
+    if (!currentUser) return;
+    const unread = allNotifs.filter(n => !n.read);
+    if (!unread.length) { showToast('All already read'); return; }
+    try {
+      const batch = writeBatch(db);
+      unread.forEach(n => batch.update(doc(db, 'notifications', n.id), { read: true }));
+      await batch.commit();
+      showToast(`✓ Marked ${unread.length} as read`);
+      log(`Marked ${unread.length} as read`, 'ok');
+    } catch (e) {
+      log('Mark all failed: ' + e.message, 'err');
+    }
+  });
+
+  // ── Delete all (with confirm modal) ──
+  deleteAllBtn.addEventListener('click', () => {
+    if (!currentUser || !allNotifs.length) { showToast('No notifications to delete'); return; }
+
+    // Get only the filtered/visible ones
+    let toDelete = [...allNotifs];
+    if (activeFilter === 'unread') toDelete = toDelete.filter(n => !n.read);
+    else if (activeFilter !== 'all') toDelete = toDelete.filter(n => n.type === activeFilter);
+
+    if (!toDelete.length) { showToast('Nothing to delete in this filter'); return; }
+
+    const label = activeFilter === 'all' ? 'all notifications' : `all ${activeFilter} notifications`;
+
+    showConfirm({
+      title: 'Delete notifications',
+      sub: `This will permanently delete ${label} (${toDelete.length} item${toDelete.length !== 1 ? 's' : ''}). This cannot be undone.`,
+      confirmText: 'Yes, delete',
+      onConfirm: async () => {
+        try {
+          // Animate all items out first
+          document.querySelectorAll('.notif-item').forEach(el => el.classList.add('deleting'));
+          await new Promise(r => setTimeout(r, 260));
+
+          // Firestore batch delete (max 500 per batch)
+          const chunks = [];
+          for (let i = 0; i < toDelete.length; i += 490) {
+            chunks.push(toDelete.slice(i, i + 490));
+          }
+          for (const chunk of chunks) {
+            const batch = writeBatch(db);
+            chunk.forEach(n => batch.delete(doc(db, 'notifications', n.id)));
+            await batch.commit();
+          }
+          showToast(`✓ Deleted ${toDelete.length} notification${toDelete.length !== 1 ? 's' : ''}`);
+          log(`Deleted ${toDelete.length} notification(s)`, 'ok');
+        } catch (e) {
+          log('Delete all failed: ' + e.message, 'err');
+          showToast('Delete failed: ' + e.message);
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>
